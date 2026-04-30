@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ItemCondition {
+  NEW
+  GOOD
+  NEEDS_REPAIR
+  RETIRED
+}
+
+enum InsuranceStatus {
+  INSURED
+  PENDING
+  EXPIRED
+  NOT_INSURED
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  color     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  items     Item[]
+}
+
+model Item {
+  id               String          @id @default(cuid())
+  name             String
+  description      String?
+  categoryId       String
+  category         Category        @relation(fields: [categoryId], references: [id])
+  brand            String?
+  model            String?
+  serialNumber     String?         @unique
+  location         String?
+  purchaseYear     Int
+  purchaseDate     DateTime?
+  purchaseValue    Decimal?        @db.Decimal(12, 2)
+  supplier         String?
+  condition        ItemCondition   @default(GOOD)
+  insuranceStatus  InsuranceStatus @default(NOT_INSURED)
+  insuranceCompany String?
+  insurancePolicy  String?
+  insuranceExpires DateTime?
+  warrantyExpires  DateTime?
+  notes            String?
+  invoiceFileName String?
+  /// Caminho local `/uploads/invoices/...` ou URL do Vercel Blob (privada ou pública). Leitura via `/api/items/[id]/invoice`.
+  invoiceFileUrl  String?
+  images          ItemImage[]
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@index([categoryId])
+  @@index([insuranceStatus])
+  @@index([condition])
+  @@index([purchaseYear])
+}
+
+model ItemImage {
+  id        String   @id @default(cuid())
+  itemId    String
+  item      Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  url       String
+  fileName  String
+  alt       String?
+  createdAt DateTime @default(now())
+
+  @@index([itemId])
+}

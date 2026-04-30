@@ -20,6 +20,12 @@
 # production
 /build
 
+# local uploads
+/public/uploads/assets/*
+/public/uploads/invoices/*
+!/public/uploads/assets/.gitkeep
+!/public/uploads/invoices/.gitkeep
+
 # misc
 .DS_Store
 *.pem
@@ -32,6 +38,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel

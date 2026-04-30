@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Asset Manager
 
-## Getting Started
+Aplicação Next.js para gestão de itens de um estúdio: equipamentos, decoração, mobiliário, arquivos de nota fiscal, imagens, seguro, garantia e observações operacionais.
 
-First, run the development server:
+## Stack
+
+- Next.js 16 com App Router
+- TypeScript
+- Tailwind CSS
+- PostgreSQL
+- Prisma 7
+
+## Primeiros passos
+
+Crie o arquivo de ambiente:
+
+```bash
+cp .env.example .env
+```
+
+Suba o banco com Docker:
+
+```bash
+docker compose up -d postgres
+```
+
+Aplique o schema e cadastre as categorias iniciais:
+
+```bash
+npm run db:push
+npm run db:seed
+```
+
+Inicie a aplicação:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Acesse `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts úteis
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `npm run dev`: servidor local
+- `npm run build`: build de produção
+- `npm run lint`: verificação ESLint
+- `npm run db:generate`: gera o Prisma Client
+- `npm run db:push`: sincroniza o schema no PostgreSQL
+- `npm run db:seed`: cria categorias iniciais
+- `npm run db:studio`: abre o Prisma Studio
 
-## Learn More
+## Uploads
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Em desenvolvimento, imagens e notas fiscais são gravadas em `public/uploads`. O modelo já guarda URL e nome do arquivo, então a troca futura para S3, Cloudinary ou storage privado fica concentrada na action de cadastro.
