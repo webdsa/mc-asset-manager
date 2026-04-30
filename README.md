@@ -7,8 +7,12 @@ Aplicação Next.js para gestão de itens de um estúdio: equipamentos, decoraç
 - Next.js 16 com App Router
 - TypeScript
 - Tailwind CSS
-- PostgreSQL
+- PostgreSQL (local via Docker; produção no [Neon](https://neon.tech))
 - Prisma 7
+
+## Produção (Neon)
+
+No dashboard do Neon, copie a URL **com pooler** para `DATABASE_URL` (a app Next.js usa essa variável) e a URL **direta** (sem `-pooler` no host) para `DIRECT_URL`. O Prisma CLI (`db push`, `migrate`, `studio`) usa automaticamente a direta quando `DIRECT_URL`, `DATABASE_URL_UNPOOLED` (integração Vercel + Neon) ou `POSTGRES_URL_NON_POOLING` estiver definida; caso contrário usa só `DATABASE_URL` — suficiente para o Postgres local do Docker.
 
 ## Primeiros passos
 
