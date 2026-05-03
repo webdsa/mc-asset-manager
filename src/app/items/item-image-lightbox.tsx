@@ -52,7 +52,7 @@ export function ItemImageLightbox({
     >
       <button
         type="button"
-        className="absolute inset-0 bg-black/80 transition hover:bg-black/75"
+        className="absolute inset-0 bg-black/80"
         aria-label="Fechar"
         onClick={onClose}
       />
