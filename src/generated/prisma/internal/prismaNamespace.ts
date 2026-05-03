@@ -863,6 +863,8 @@ export const ItemScalarFieldEnum = {
   brand: 'brand',
   model: 'model',
   serialNumber: 'serialNumber',
+  patrimonyCode: 'patrimonyCode',
+  quantity: 'quantity',
   location: 'location',
   purchaseYear: 'purchaseYear',
   purchaseDate: 'purchaseDate',

@@ -42,6 +42,9 @@ export function PublicCatalogFilter({
   const pushParams = useCallback(
     (updates: { categoria?: string; q?: string }) => {
       const next = new URLSearchParams(searchParams?.toString());
+      if (updates.categoria !== undefined || updates.q !== undefined) {
+        next.delete("pagina");
+      }
       if (updates.categoria !== undefined) {
         if (!updates.categoria) {
           next.delete("categoria");

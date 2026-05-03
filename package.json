@@ -12,7 +12,8 @@
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
-    "db:up": "docker compose up -d postgres"
+    "db:up": "docker compose up -d postgres",
+    "import:items": "tsx scripts/import-items-from-api.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

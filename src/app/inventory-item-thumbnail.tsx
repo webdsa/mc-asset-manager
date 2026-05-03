@@ -16,11 +16,14 @@ export function InventoryItemThumbnail({
   itemId,
   itemName,
   image,
+  imageCount,
   className,
 }: {
   itemId: string;
   itemName: string;
   image: ThumbImage | undefined;
+  /** Total de fotos do item; badge só aparece com mais de uma foto */
+  imageCount?: number;
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -59,6 +62,14 @@ export function InventoryItemThumbnail({
           aria-label={`Ampliar foto do item ${itemName}`}
           onClick={() => setOpen(true)}
         />
+        {imageCount !== undefined && imageCount > 1 ? (
+          <span
+            className="pointer-events-none absolute right-1.5 top-1.5 z-[2] inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-petroleum-950/85 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-white shadow-sm ring-1 ring-white/15 backdrop-blur-[2px]"
+            aria-hidden
+          >
+            {imageCount}
+          </span>
+        ) : null}
       </div>
 
       {open ? (

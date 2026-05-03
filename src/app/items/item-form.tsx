@@ -29,6 +29,8 @@ export type ItemFormInitial = {
   brand: string | null;
   model: string | null;
   serialNumber: string | null;
+  patrimonyCode: string | null;
+  quantity: number;
   location: string | null;
   purchaseYear: number;
   purchaseDate: Date | null;
@@ -188,6 +190,15 @@ export function ItemForm({
                     defaultValue={initial?.serialNumber ?? ""}
                   />
                 </Field>
+                <Field label="Código patrimônio">
+                  <input
+                    name="patrimonyCode"
+                    className={inputClass}
+                    placeholder="Opcional"
+                    defaultValue={initial?.patrimonyCode ?? ""}
+                    autoComplete="off"
+                  />
+                </Field>
                 <Field label="Estado">
                   <select
                     name="condition"
@@ -200,6 +211,20 @@ export function ItemForm({
                       </option>
                     ))}
                   </select>
+                </Field>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Quantidade" required>
+                  <input
+                    name="quantity"
+                    type="number"
+                    min={1}
+                    step={1}
+                    required
+                    className={inputClass}
+                    placeholder="1"
+                    defaultValue={initial?.quantity ?? 1}
+                  />
                 </Field>
               </div>
               <Field label="Descrição">

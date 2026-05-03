@@ -16,6 +16,7 @@ export type InsuranceQuoteFormSnapshot = {
   brand: string | null;
   model: string | null;
   serialNumber: string | null;
+  patrimonyCode: string | null;
   purchaseYear: string | null;
   purchaseDate: string | null;
   purchaseValueRaw: string | null;
@@ -100,6 +101,7 @@ function buildEmailHtml(
     ${row("Marca", data.brand)}
     ${row("Modelo", data.model)}
     ${row("Número de série", data.serialNumber)}
+    ${row("Código patrimônio", data.patrimonyCode)}
     ${row("Ano de compra", data.purchaseYear)}
     ${row("Data de compra", data.purchaseDate)}
     ${row("Valor de compra", data.purchaseValueRaw?.trim() ? data.purchaseValueRaw : null)}

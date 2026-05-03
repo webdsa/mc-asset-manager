@@ -3,11 +3,15 @@ import { Suspense } from "react";
 import { Boxes, MapPin, Tag } from "lucide-react";
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { itemIdsMatchingPatrimonyCode } from "@/lib/item-patrimony-search";
 import { formatCondition } from "@/lib/format";
 import { PageHeader, pageMainInnerClass } from "@/components/page-header";
 import { PublicCatalogFilter } from "@/app/public-catalog-filter";
 import { PublicCatalogItemImage } from "@/app/public-catalog-item-image";
+import { PublicCatalogPagination } from "@/app/public-catalog-pagination";
 import { PublicCatalogViewToggle } from "@/app/public-catalog-view-toggle";
+
+const PUBLIC_CATALOG_PAGE_SIZE = 24;
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -22,6 +26,7 @@ type PageProps = {
     categoria?: string | string[];
     q?: string | string[];
     vista?: string | string[];
+    pagina?: string | string[];
   }>;
 };
 
@@ -32,6 +37,18 @@ function pickSearchParam(value: string | string[] | undefined): string | undefin
   const raw = Array.isArray(value) ? value[0] : value;
   const trimmed = raw?.trim();
   return trimmed ? trimmed : undefined;
+}
+
+function parsePagina(value: string | string[] | undefined): number {
+  const raw = pickSearchParam(value);
+  if (!raw) {
+    return 1;
+  }
+  const n = parseInt(raw, 10);
+  if (!Number.isFinite(n) || n < 1) {
+    return 1;
+  }
+  return Math.floor(n);
 }
 
 export default async function PublicCatalogHomePage({ searchParams }: PageProps) {
@@ -50,6 +67,10 @@ export default async function PublicCatalogHomePage({ searchParams }: PageProps)
   const filterOk =
     categoryFilter && categoryIds.includes(categoryFilter) ? categoryFilter : undefined;
 
+  const patrimonyIds = textQuery
+    ? await itemIdsMatchingPatrimonyCode(prisma, textQuery)
+    : [];
+
   const itemWhere: Prisma.ItemWhereInput = {
     categoryId: filterOk ? filterOk : { in: categoryIds },
     ...(textQuery
@@ -60,13 +81,22 @@ export default async function PublicCatalogHomePage({ searchParams }: PageProps)
             { model: { contains: textQuery, mode: "insensitive" } },
             { description: { contains: textQuery, mode: "insensitive" } },
             { location: { contains: textQuery, mode: "insensitive" } },
+            { serialNumber: { contains: textQuery, mode: "insensitive" } },
+            ...(patrimonyIds.length > 0 ? [{ id: { in: patrimonyIds } }] : []),
           ],
         }
       : {}),
   };
 
+  const totalCount =
+    publicCategories.length === 0 ? 0 : await prisma.item.count({ where: itemWhere });
+
+  const totalPages = Math.max(1, Math.ceil(totalCount / PUBLIC_CATALOG_PAGE_SIZE));
+  const requestedPage = parsePagina(params.pagina);
+  const page = Math.min(requestedPage, totalPages);
+
   const items =
-    publicCategories.length === 0
+    publicCategories.length === 0 || totalCount === 0
       ? []
       : await prisma.item.findMany({
           where: itemWhere,
@@ -75,6 +105,8 @@ export default async function PublicCatalogHomePage({ searchParams }: PageProps)
             images: { orderBy: { createdAt: "asc" } },
           },
           orderBy: [{ category: { name: "asc" } }, { name: "asc" }],
+          skip: (page - 1) * PUBLIC_CATALOG_PAGE_SIZE,
+          take: PUBLIC_CATALOG_PAGE_SIZE,
         });
 
   return (
@@ -265,6 +297,18 @@ export default async function PublicCatalogHomePage({ searchParams }: PageProps)
             })}
           </div>
         )}
+
+        <PublicCatalogPagination
+          page={page}
+          totalPages={totalPages}
+          totalCount={totalCount}
+          pageSize={PUBLIC_CATALOG_PAGE_SIZE}
+          query={{
+            categoria: filterOk,
+            q: textQuery,
+            vista: isGrid ? "grid" : undefined,
+          }}
+        />
 
         <p className="mt-8 text-center text-xs text-slate-400">
           <Link href="/login" className="font-medium text-petroleum-800 hover:text-primary">

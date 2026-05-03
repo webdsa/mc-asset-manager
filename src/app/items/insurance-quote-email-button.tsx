@@ -52,6 +52,7 @@ export function InsuranceQuoteEmailButton({
       brand: textField(form, "brand"),
       model: textField(form, "model"),
       serialNumber: textField(form, "serialNumber"),
+      patrimonyCode: textField(form, "patrimonyCode"),
       purchaseYear: textField(form, "purchaseYear"),
       purchaseDate: textField(form, "purchaseDate"),
       purchaseValueRaw: textField(form, "purchaseValue"),

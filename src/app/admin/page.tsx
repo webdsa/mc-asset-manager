@@ -18,6 +18,7 @@ import {
 } from "@/lib/format";
 import { itemInvoiceDownloadHref } from "@/lib/invoice";
 import { prisma } from "@/lib/prisma";
+import { itemIdsMatchingPatrimonyCode } from "@/lib/item-patrimony-search";
 import { InventoryFilterForm } from "@/app/inventory-filter-form";
 import { InventoryItemActions } from "@/app/inventory-item-actions";
 import { InventoryItemThumbnail } from "@/app/inventory-item-thumbnail";
@@ -57,6 +58,8 @@ export default async function AdminInventoryPage({ searchParams }: PageProps) {
   const category = pickSearchParam(params.category);
   const insurance = pickSearchParam(params.insurance);
 
+  const patrimonyIds = query ? await itemIdsMatchingPatrimonyCode(prisma, query) : [];
+
   const where: Prisma.ItemWhereInput = {
     ...(query
       ? {
@@ -66,6 +69,7 @@ export default async function AdminInventoryPage({ searchParams }: PageProps) {
             { model: { contains: query, mode: "insensitive" } },
             { serialNumber: { contains: query, mode: "insensitive" } },
             { location: { contains: query, mode: "insensitive" } },
+            ...(patrimonyIds.length > 0 ? [{ id: { in: patrimonyIds } }] : []),
           ],
         }
       : {}),
@@ -191,6 +195,7 @@ export default async function AdminInventoryPage({ searchParams }: PageProps) {
                         itemId={item.id}
                         itemName={item.name}
                         image={image}
+                        imageCount={item.images.length}
                         className="max-lg:h-[6.75rem] max-lg:w-[6.75rem] max-lg:rounded-lg"
                       />
                     </div>
@@ -201,8 +206,9 @@ export default async function AdminInventoryPage({ searchParams }: PageProps) {
                       </h2>
                       <p className="mt-1 text-sm leading-snug text-slate-500">
                         <span className="line-clamp-2 lg:truncate">
-                          {[item.brand, item.model, item.serialNumber].filter(Boolean).join(" • ") ||
-                            "Sem marca/modelo informado"}
+                          {[item.brand, item.model, item.serialNumber, item.patrimonyCode]
+                            .filter(Boolean)
+                            .join(" • ") || "Sem marca/modelo informado"}
                         </span>
                       </p>
                       <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1.5 text-xs text-slate-500">
@@ -275,6 +281,7 @@ export default async function AdminInventoryPage({ searchParams }: PageProps) {
                         <p className="text-slate-500">
                           {formatCurrency(item.purchaseValue?.toString())}
                         </p>
+                        <p className="mt-1 text-xs text-slate-500">Qtd. {item.quantity}</p>
                       </div>
                     </div>
                   </article>

@@ -90,6 +90,10 @@ model Item {
   brand            String?
   model            String?
   serialNumber     String?         @unique
+  /// Código de patrimônio (contabilidade / inventário físico).
+  patrimonyCode    String?         @unique
+  /// Quantidade de unidades representadas por este registro (≥ 1).
+  quantity         Int             @default(1)
   location         String?
   purchaseYear     Int
   purchaseDate     DateTime?

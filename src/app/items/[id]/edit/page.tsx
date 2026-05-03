@@ -32,6 +32,8 @@ export default async function EditItemPage({ params }: PageProps) {
     brand: item.brand,
     model: item.model,
     serialNumber: item.serialNumber,
+    patrimonyCode: item.patrimonyCode,
+    quantity: item.quantity,
     location: item.location,
     purchaseYear: item.purchaseYear,
     purchaseDate: item.purchaseDate,

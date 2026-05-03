@@ -36,6 +36,16 @@ function numberValue(formData: FormData, key: string) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+/** Inteiro ≥ 1; se inválido ou vazio, retorna o padrão. */
+function quantityFromForm(formData: FormData, key: string, defaultValue: number) {
+  const n = numberValue(formData, key);
+  if (n == null) {
+    return defaultValue;
+  }
+  const q = Math.floor(n);
+  return q >= 1 ? q : defaultValue;
+}
+
 function purchaseValueFromForm(formData: FormData) {
   const raw = formData.get("purchaseValue");
   const str = typeof raw === "string" ? raw.trim() : "";
@@ -279,6 +289,7 @@ export async function createItem(formData: FormData) {
     Object.values(InsuranceStatus),
     InsuranceStatus.NOT_INSURED,
   );
+  const quantity = quantityFromForm(formData, "quantity", 1);
 
   const invoice = formData.get("invoice");
   let invoiceUpload: InvoiceSaveResult | null = null;
@@ -307,6 +318,8 @@ export async function createItem(formData: FormData) {
       brand: text(formData, "brand"),
       model: text(formData, "model"),
       serialNumber: text(formData, "serialNumber"),
+      patrimonyCode: text(formData, "patrimonyCode"),
+      quantity,
       location: text(formData, "location"),
       purchaseYear,
       purchaseDate: dateValue(formData, "purchaseDate"),
@@ -364,6 +377,7 @@ export async function updateItem(formData: FormData) {
     Object.values(InsuranceStatus),
     InsuranceStatus.NOT_INSURED,
   );
+  const quantity = quantityFromForm(formData, "quantity", 1);
 
   const invoice = formData.get("invoice");
   let invoiceFileName = existing.invoiceFileName;
@@ -401,6 +415,8 @@ export async function updateItem(formData: FormData) {
       brand: text(formData, "brand"),
       model: text(formData, "model"),
       serialNumber: text(formData, "serialNumber"),
+      patrimonyCode: text(formData, "patrimonyCode"),
+      quantity,
       location: text(formData, "location"),
       purchaseYear,
       purchaseDate: dateValue(formData, "purchaseDate"),
