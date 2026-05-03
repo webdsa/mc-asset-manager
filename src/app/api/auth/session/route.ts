@@ -8,6 +8,9 @@ import {
   getFirebasePublicConfig,
   isFirebaseAuthConfigured,
 } from "@/lib/firebase/public-config";
+import { UserAccessStatus } from "@/generated/prisma/client";
+import { syncFirebaseUserFromDecoded } from "@/lib/firebase-user-sync";
+import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
 
@@ -78,13 +81,24 @@ export async function POST(request: NextRequest) {
 
   try {
     const auth = getFirebaseAdminAuth();
-    // `createSessionCookie` já valida o ID token no backend; não chamar
-    // `verifyIdToken(..., true)` aqui — o check de revogação é extra e pode falhar sem necessidade.
+    const decoded = await auth.verifyIdToken(idToken);
+    await syncFirebaseUserFromDecoded(decoded);
+    // `createSessionCookie` valida o ID token; já verificámos com `verifyIdToken` para sincronizar o User.
     const sessionCookie = await auth.createSessionCookie(idToken, {
       expiresIn: SESSION_COOKIE_MS,
     });
 
-    const res = NextResponse.json({ ok: true });
+    const appUser = await prisma.user.findUniqueOrThrow({
+      where: { firebaseUid: decoded.uid },
+      select: { accessStatus: true, role: true },
+    });
+
+    const res = NextResponse.json({
+      ok: true,
+      accessStatus: appUser.accessStatus,
+      role: appUser.role,
+      isAuthorized: appUser.accessStatus === UserAccessStatus.APPROVED,
+    });
     res.cookies.set(AUTH_SESSION_COOKIE, sessionCookie, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

@@ -78,6 +78,7 @@ export const CategoryScalarFieldEnum = {
   id: 'id',
   name: 'name',
   color: 'color',
+  isPublic: 'isPublic',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -90,6 +91,10 @@ export const UserScalarFieldEnum = {
   firebaseUid: 'firebaseUid',
   email: 'email',
   displayName: 'displayName',
+  role: 'role',
+  accessStatus: 'accessStatus',
+  approvedAt: 'approvedAt',
+  approvedByUserId: 'approvedByUserId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

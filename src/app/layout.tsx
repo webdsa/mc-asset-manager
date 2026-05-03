@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { AppAuthBar } from "@/components/app-auth-bar";
+import { AuthenticatedShell } from "@/components/authenticated-shell";
 import {
   getFirebasePublicConfig,
   isFirebaseAuthConfigured,
@@ -34,9 +34,10 @@ export default function RootLayout({
     <html lang="pt-BR" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
         {showAuthBar && firebaseConfig ? (
-          <AppAuthBar firebaseConfig={firebaseConfig} />
-        ) : null}
-        {children}
+          <AuthenticatedShell firebaseConfig={firebaseConfig}>{children}</AuthenticatedShell>
+        ) : (
+          children
+        )}
       </body>
     </html>
   );

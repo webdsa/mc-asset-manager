@@ -71,8 +71,19 @@ export function LoginForm({ firebaseConfig }: Props) {
         const data = (await res.json().catch(() => null)) as { error?: string } | null;
         throw new Error(data?.error ?? "Não foi possível criar a sessão.");
       }
+      const data = (await res.json().catch(() => null)) as {
+        accessStatus?: string;
+      } | null;
       const next = searchParams.get("next");
-      router.push(next && next.startsWith("/") ? next : "/");
+      const pending =
+        data?.accessStatus === "PENDING" || data?.accessStatus === "REVOKED";
+      const dest =
+        pending
+          ? "/pendente"
+          : next && next.startsWith("/") && next !== "/"
+            ? next
+            : "/admin";
+      router.push(dest);
       router.refresh();
     },
     [router, searchParams],
@@ -147,7 +158,7 @@ export function LoginForm({ firebaseConfig }: Props) {
   }
 
   return (
-    <div className="mt-8 flex w-full max-w-sm flex-col gap-4">
+    <div className="flex w-full max-w-sm flex-col gap-4">
       <button
         type="button"
         disabled={pending}
@@ -206,7 +217,7 @@ export function LoginForm({ firebaseConfig }: Props) {
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex h-11 items-center justify-center rounded-md bg-slate-950 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:opacity-60"
+          className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-hover disabled:opacity-60"
         >
           {pending ? "Entrando…" : "Entrar com e-mail"}
         </button>

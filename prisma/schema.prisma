@@ -21,13 +21,64 @@ enum InsuranceStatus {
   NOT_INSURED
 }
 
+/// Leitura: ver itens da categoria. Edição: criar/alterar/excluir itens nessa categoria.
+enum CategoryAccessLevel {
+  READ
+  EDIT
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  /// Identificado por ASSET_MANAGER_OWNER_FIREBASE_UID no .env; não atribuível pela UI.
+  OWNER
+}
+
+enum UserAccessStatus {
+  PENDING
+  APPROVED
+  REVOKED
+}
+
 model Category {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  color     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  items     Item[]
+  id           String               @id @default(cuid())
+  name         String               @unique
+  color        String
+  /// Itens desta categoria aparecem no catálogo público na raiz (`/`).
+  isPublic     Boolean              @default(false)
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  items        Item[]
+  userAccesses UserCategoryAccess[]
+}
+
+model User {
+  id               String             @id @default(cuid())
+  firebaseUid      String             @unique
+  email            String?
+  displayName      String?
+  role             UserRole           @default(USER)
+  accessStatus     UserAccessStatus   @default(PENDING)
+  approvedAt       DateTime?
+  approvedByUserId String?
+  approvedBy       User?              @relation("UserApproval", fields: [approvedByUserId], references: [id], onDelete: SetNull)
+  approvalsGranted User[]             @relation("UserApproval")
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  categoryAccesses UserCategoryAccess[]
+}
+
+model UserCategoryAccess {
+  id         String              @id @default(cuid())
+  userId     String
+  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId String
+  category   Category            @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  level      CategoryAccessLevel
+
+  @@unique([userId, categoryId])
+  @@index([userId])
+  @@index([categoryId])
 }
 
 model Item {
@@ -51,10 +102,10 @@ model Item {
   insuranceExpires DateTime?
   warrantyExpires  DateTime?
   notes            String?
-  invoiceFileName String?
+  invoiceFileName  String?
   /// Caminho local `/uploads/invoices/...` ou URL do Vercel Blob (privada ou pública). Leitura via `/api/items/[id]/invoice`.
-  invoiceFileUrl  String?
-  images          ItemImage[]
+  invoiceFileUrl   String?
+  images           ItemImage[]
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
 

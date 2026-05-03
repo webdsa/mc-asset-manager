@@ -29,6 +29,10 @@ export type UserMinAggregateOutputType = {
   firebaseUid: string | null
   email: string | null
   displayName: string | null
+  role: $Enums.UserRole | null
+  accessStatus: $Enums.UserAccessStatus | null
+  approvedAt: Date | null
+  approvedByUserId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -38,6 +42,10 @@ export type UserMaxAggregateOutputType = {
   firebaseUid: string | null
   email: string | null
   displayName: string | null
+  role: $Enums.UserRole | null
+  accessStatus: $Enums.UserAccessStatus | null
+  approvedAt: Date | null
+  approvedByUserId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -47,6 +55,10 @@ export type UserCountAggregateOutputType = {
   firebaseUid: number
   email: number
   displayName: number
+  role: number
+  accessStatus: number
+  approvedAt: number
+  approvedByUserId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -58,6 +70,10 @@ export type UserMinAggregateInputType = {
   firebaseUid?: true
   email?: true
   displayName?: true
+  role?: true
+  accessStatus?: true
+  approvedAt?: true
+  approvedByUserId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -67,6 +83,10 @@ export type UserMaxAggregateInputType = {
   firebaseUid?: true
   email?: true
   displayName?: true
+  role?: true
+  accessStatus?: true
+  approvedAt?: true
+  approvedByUserId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -76,6 +96,10 @@ export type UserCountAggregateInputType = {
   firebaseUid?: true
   email?: true
   displayName?: true
+  role?: true
+  accessStatus?: true
+  approvedAt?: true
+  approvedByUserId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -158,6 +182,10 @@ export type UserGroupByOutputType = {
   firebaseUid: string
   email: string | null
   displayName: string | null
+  role: $Enums.UserRole
+  accessStatus: $Enums.UserAccessStatus
+  approvedAt: Date | null
+  approvedByUserId: string | null
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -188,8 +216,14 @@ export type UserWhereInput = {
   firebaseUid?: Prisma.StringFilter<"User"> | string
   email?: Prisma.StringNullableFilter<"User"> | string | null
   displayName?: Prisma.StringNullableFilter<"User"> | string | null
+  role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
+  accessStatus?: Prisma.EnumUserAccessStatusFilter<"User"> | $Enums.UserAccessStatus
+  approvedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  approvedByUserId?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  approvedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  approvalsGranted?: Prisma.UserListRelationFilter
   categoryAccesses?: Prisma.UserCategoryAccessListRelationFilter
 }
 
@@ -198,8 +232,14 @@ export type UserOrderByWithRelationInput = {
   firebaseUid?: Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   displayName?: Prisma.SortOrderInput | Prisma.SortOrder
+  role?: Prisma.SortOrder
+  accessStatus?: Prisma.SortOrder
+  approvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  approvedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  approvedBy?: Prisma.UserOrderByWithRelationInput
+  approvalsGranted?: Prisma.UserOrderByRelationAggregateInput
   categoryAccesses?: Prisma.UserCategoryAccessOrderByRelationAggregateInput
 }
 
@@ -211,8 +251,14 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   email?: Prisma.StringNullableFilter<"User"> | string | null
   displayName?: Prisma.StringNullableFilter<"User"> | string | null
+  role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
+  accessStatus?: Prisma.EnumUserAccessStatusFilter<"User"> | $Enums.UserAccessStatus
+  approvedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  approvedByUserId?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  approvedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  approvalsGranted?: Prisma.UserListRelationFilter
   categoryAccesses?: Prisma.UserCategoryAccessListRelationFilter
 }, "id" | "firebaseUid">
 
@@ -221,6 +267,10 @@ export type UserOrderByWithAggregationInput = {
   firebaseUid?: Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   displayName?: Prisma.SortOrderInput | Prisma.SortOrder
+  role?: Prisma.SortOrder
+  accessStatus?: Prisma.SortOrder
+  approvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  approvedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -236,6 +286,10 @@ export type UserScalarWhereWithAggregatesInput = {
   firebaseUid?: Prisma.StringWithAggregatesFilter<"User"> | string
   email?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   displayName?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  role?: Prisma.EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
+  accessStatus?: Prisma.EnumUserAccessStatusWithAggregatesFilter<"User"> | $Enums.UserAccessStatus
+  approvedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  approvedByUserId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -245,8 +299,13 @@ export type UserCreateInput = {
   firebaseUid: string
   email?: string | null
   displayName?: string | null
+  role?: $Enums.UserRole
+  accessStatus?: $Enums.UserAccessStatus
+  approvedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  approvedBy?: Prisma.UserCreateNestedOneWithoutApprovalsGrantedInput
+  approvalsGranted?: Prisma.UserCreateNestedManyWithoutApprovedByInput
   categoryAccesses?: Prisma.UserCategoryAccessCreateNestedManyWithoutUserInput
 }
 
@@ -255,8 +314,13 @@ export type UserUncheckedCreateInput = {
   firebaseUid: string
   email?: string | null
   displayName?: string | null
+  role?: $Enums.UserRole
+  accessStatus?: $Enums.UserAccessStatus
+  approvedAt?: Date | string | null
+  approvedByUserId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  approvalsGranted?: Prisma.UserUncheckedCreateNestedManyWithoutApprovedByInput
   categoryAccesses?: Prisma.UserCategoryAccessUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -265,8 +329,13 @@ export type UserUpdateInput = {
   firebaseUid?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  accessStatus?: Prisma.EnumUserAccessStatusFieldUpdateOperationsInput | $Enums.UserAccessStatus
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  approvedBy?: Prisma.UserUpdateOneWithoutApprovalsGrantedNestedInput
+  approvalsGranted?: Prisma.UserUpdateManyWithoutApprovedByNestedInput
   categoryAccesses?: Prisma.UserCategoryAccessUpdateManyWithoutUserNestedInput
 }
 
@@ -275,8 +344,13 @@ export type UserUncheckedUpdateInput = {
   firebaseUid?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  accessStatus?: Prisma.EnumUserAccessStatusFieldUpdateOperationsInput | $Enums.UserAccessStatus
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  approvalsGranted?: Prisma.UserUncheckedUpdateManyWithoutApprovedByNestedInput
   categoryAccesses?: Prisma.UserCategoryAccessUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -285,6 +359,10 @@ export type UserCreateManyInput = {
   firebaseUid: string
   email?: string | null
   displayName?: string | null
+  role?: $Enums.UserRole
+  accessStatus?: $Enums.UserAccessStatus
+  approvedAt?: Date | string | null
+  approvedByUserId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -294,6 +372,9 @@ export type UserUpdateManyMutationInput = {
   firebaseUid?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  accessStatus?: Prisma.EnumUserAccessStatusFieldUpdateOperationsInput | $Enums.UserAccessStatus
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -303,8 +384,27 @@ export type UserUncheckedUpdateManyInput = {
   firebaseUid?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  accessStatus?: Prisma.EnumUserAccessStatusFieldUpdateOperationsInput | $Enums.UserAccessStatus
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type UserNullableScalarRelationFilter = {
+  is?: Prisma.UserWhereInput | null
+  isNot?: Prisma.UserWhereInput | null
+}
+
+export type UserListRelationFilter = {
+  every?: Prisma.UserWhereInput
+  some?: Prisma.UserWhereInput
+  none?: Prisma.UserWhereInput
+}
+
+export type UserOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -312,6 +412,10 @@ export type UserCountOrderByAggregateInput = {
   firebaseUid?: Prisma.SortOrder
   email?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
+  role?: Prisma.SortOrder
+  accessStatus?: Prisma.SortOrder
+  approvedAt?: Prisma.SortOrder
+  approvedByUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -321,6 +425,10 @@ export type UserMaxOrderByAggregateInput = {
   firebaseUid?: Prisma.SortOrder
   email?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
+  role?: Prisma.SortOrder
+  accessStatus?: Prisma.SortOrder
+  approvedAt?: Prisma.SortOrder
+  approvedByUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -330,6 +438,10 @@ export type UserMinOrderByAggregateInput = {
   firebaseUid?: Prisma.SortOrder
   email?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
+  role?: Prisma.SortOrder
+  accessStatus?: Prisma.SortOrder
+  approvedAt?: Prisma.SortOrder
+  approvedByUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -339,8 +451,78 @@ export type UserScalarRelationFilter = {
   isNot?: Prisma.UserWhereInput
 }
 
+export type UserCreateNestedOneWithoutApprovalsGrantedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutApprovalsGrantedInput, Prisma.UserUncheckedCreateWithoutApprovalsGrantedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutApprovalsGrantedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedManyWithoutApprovedByInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutApprovedByInput, Prisma.UserUncheckedCreateWithoutApprovedByInput> | Prisma.UserCreateWithoutApprovedByInput[] | Prisma.UserUncheckedCreateWithoutApprovedByInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutApprovedByInput | Prisma.UserCreateOrConnectWithoutApprovedByInput[]
+  createMany?: Prisma.UserCreateManyApprovedByInputEnvelope
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+}
+
+export type UserUncheckedCreateNestedManyWithoutApprovedByInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutApprovedByInput, Prisma.UserUncheckedCreateWithoutApprovedByInput> | Prisma.UserCreateWithoutApprovedByInput[] | Prisma.UserUncheckedCreateWithoutApprovedByInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutApprovedByInput | Prisma.UserCreateOrConnectWithoutApprovedByInput[]
+  createMany?: Prisma.UserCreateManyApprovedByInputEnvelope
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+}
+
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
+}
+
+export type EnumUserRoleFieldUpdateOperationsInput = {
+  set?: $Enums.UserRole
+}
+
+export type EnumUserAccessStatusFieldUpdateOperationsInput = {
+  set?: $Enums.UserAccessStatus
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
+export type UserUpdateOneWithoutApprovalsGrantedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutApprovalsGrantedInput, Prisma.UserUncheckedCreateWithoutApprovalsGrantedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutApprovalsGrantedInput
+  upsert?: Prisma.UserUpsertWithoutApprovalsGrantedInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutApprovalsGrantedInput, Prisma.UserUpdateWithoutApprovalsGrantedInput>, Prisma.UserUncheckedUpdateWithoutApprovalsGrantedInput>
+}
+
+export type UserUpdateManyWithoutApprovedByNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutApprovedByInput, Prisma.UserUncheckedCreateWithoutApprovedByInput> | Prisma.UserCreateWithoutApprovedByInput[] | Prisma.UserUncheckedCreateWithoutApprovedByInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutApprovedByInput | Prisma.UserCreateOrConnectWithoutApprovedByInput[]
+  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutApprovedByInput | Prisma.UserUpsertWithWhereUniqueWithoutApprovedByInput[]
+  createMany?: Prisma.UserCreateManyApprovedByInputEnvelope
+  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  update?: Prisma.UserUpdateWithWhereUniqueWithoutApprovedByInput | Prisma.UserUpdateWithWhereUniqueWithoutApprovedByInput[]
+  updateMany?: Prisma.UserUpdateManyWithWhereWithoutApprovedByInput | Prisma.UserUpdateManyWithWhereWithoutApprovedByInput[]
+  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+}
+
+export type UserUncheckedUpdateManyWithoutApprovedByNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutApprovedByInput, Prisma.UserUncheckedCreateWithoutApprovedByInput> | Prisma.UserCreateWithoutApprovedByInput[] | Prisma.UserUncheckedCreateWithoutApprovedByInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutApprovedByInput | Prisma.UserCreateOrConnectWithoutApprovedByInput[]
+  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutApprovedByInput | Prisma.UserUpsertWithWhereUniqueWithoutApprovedByInput[]
+  createMany?: Prisma.UserCreateManyApprovedByInputEnvelope
+  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  update?: Prisma.UserUpdateWithWhereUniqueWithoutApprovedByInput | Prisma.UserUpdateWithWhereUniqueWithoutApprovedByInput[]
+  updateMany?: Prisma.UserUpdateManyWithWhereWithoutApprovedByInput | Prisma.UserUpdateManyWithWhereWithoutApprovedByInput[]
+  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
 }
 
 export type UserCreateNestedOneWithoutCategoryAccessesInput = {
@@ -357,13 +539,160 @@ export type UserUpdateOneRequiredWithoutCategoryAccessesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCategoryAccessesInput, Prisma.UserUpdateWithoutCategoryAccessesInput>, Prisma.UserUncheckedUpdateWithoutCategoryAccessesInput>
 }
 
+export type UserCreateWithoutApprovalsGrantedInput = {
+  id?: string
+  firebaseUid: string
+  email?: string | null
+  displayName?: string | null
+  role?: $Enums.UserRole
+  accessStatus?: $Enums.UserAccessStatus
+  approvedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  approvedBy?: Prisma.UserCreateNestedOneWithoutApprovalsGrantedInput
+  categoryAccesses?: Prisma.UserCategoryAccessCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutApprovalsGrantedInput = {
+  id?: string
+  firebaseUid: string
+  email?: string | null
+  displayName?: string | null
+  role?: $Enums.UserRole
+  accessStatus?: $Enums.UserAccessStatus
+  approvedAt?: Date | string | null
+  approvedByUserId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  categoryAccesses?: Prisma.UserCategoryAccessUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutApprovalsGrantedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutApprovalsGrantedInput, Prisma.UserUncheckedCreateWithoutApprovalsGrantedInput>
+}
+
+export type UserCreateWithoutApprovedByInput = {
+  id?: string
+  firebaseUid: string
+  email?: string | null
+  displayName?: string | null
+  role?: $Enums.UserRole
+  accessStatus?: $Enums.UserAccessStatus
+  approvedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  approvalsGranted?: Prisma.UserCreateNestedManyWithoutApprovedByInput
+  categoryAccesses?: Prisma.UserCategoryAccessCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutApprovedByInput = {
+  id?: string
+  firebaseUid: string
+  email?: string | null
+  displayName?: string | null
+  role?: $Enums.UserRole
+  accessStatus?: $Enums.UserAccessStatus
+  approvedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  approvalsGranted?: Prisma.UserUncheckedCreateNestedManyWithoutApprovedByInput
+  categoryAccesses?: Prisma.UserCategoryAccessUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutApprovedByInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutApprovedByInput, Prisma.UserUncheckedCreateWithoutApprovedByInput>
+}
+
+export type UserCreateManyApprovedByInputEnvelope = {
+  data: Prisma.UserCreateManyApprovedByInput | Prisma.UserCreateManyApprovedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type UserUpsertWithoutApprovalsGrantedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutApprovalsGrantedInput, Prisma.UserUncheckedUpdateWithoutApprovalsGrantedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutApprovalsGrantedInput, Prisma.UserUncheckedCreateWithoutApprovalsGrantedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutApprovalsGrantedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutApprovalsGrantedInput, Prisma.UserUncheckedUpdateWithoutApprovalsGrantedInput>
+}
+
+export type UserUpdateWithoutApprovalsGrantedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firebaseUid?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  accessStatus?: Prisma.EnumUserAccessStatusFieldUpdateOperationsInput | $Enums.UserAccessStatus
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  approvedBy?: Prisma.UserUpdateOneWithoutApprovalsGrantedNestedInput
+  categoryAccesses?: Prisma.UserCategoryAccessUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutApprovalsGrantedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firebaseUid?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  accessStatus?: Prisma.EnumUserAccessStatusFieldUpdateOperationsInput | $Enums.UserAccessStatus
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  categoryAccesses?: Prisma.UserCategoryAccessUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserUpsertWithWhereUniqueWithoutApprovedByInput = {
+  where: Prisma.UserWhereUniqueInput
+  update: Prisma.XOR<Prisma.UserUpdateWithoutApprovedByInput, Prisma.UserUncheckedUpdateWithoutApprovedByInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutApprovedByInput, Prisma.UserUncheckedCreateWithoutApprovedByInput>
+}
+
+export type UserUpdateWithWhereUniqueWithoutApprovedByInput = {
+  where: Prisma.UserWhereUniqueInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutApprovedByInput, Prisma.UserUncheckedUpdateWithoutApprovedByInput>
+}
+
+export type UserUpdateManyWithWhereWithoutApprovedByInput = {
+  where: Prisma.UserScalarWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateManyMutationInput, Prisma.UserUncheckedUpdateManyWithoutApprovedByInput>
+}
+
+export type UserScalarWhereInput = {
+  AND?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+  OR?: Prisma.UserScalarWhereInput[]
+  NOT?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+  id?: Prisma.StringFilter<"User"> | string
+  firebaseUid?: Prisma.StringFilter<"User"> | string
+  email?: Prisma.StringNullableFilter<"User"> | string | null
+  displayName?: Prisma.StringNullableFilter<"User"> | string | null
+  role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
+  accessStatus?: Prisma.EnumUserAccessStatusFilter<"User"> | $Enums.UserAccessStatus
+  approvedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  approvedByUserId?: Prisma.StringNullableFilter<"User"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+}
+
 export type UserCreateWithoutCategoryAccessesInput = {
   id?: string
   firebaseUid: string
   email?: string | null
   displayName?: string | null
+  role?: $Enums.UserRole
+  accessStatus?: $Enums.UserAccessStatus
+  approvedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  approvedBy?: Prisma.UserCreateNestedOneWithoutApprovalsGrantedInput
+  approvalsGranted?: Prisma.UserCreateNestedManyWithoutApprovedByInput
 }
 
 export type UserUncheckedCreateWithoutCategoryAccessesInput = {
@@ -371,8 +700,13 @@ export type UserUncheckedCreateWithoutCategoryAccessesInput = {
   firebaseUid: string
   email?: string | null
   displayName?: string | null
+  role?: $Enums.UserRole
+  accessStatus?: $Enums.UserAccessStatus
+  approvedAt?: Date | string | null
+  approvedByUserId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  approvalsGranted?: Prisma.UserUncheckedCreateNestedManyWithoutApprovedByInput
 }
 
 export type UserCreateOrConnectWithoutCategoryAccessesInput = {
@@ -396,8 +730,13 @@ export type UserUpdateWithoutCategoryAccessesInput = {
   firebaseUid?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  accessStatus?: Prisma.EnumUserAccessStatusFieldUpdateOperationsInput | $Enums.UserAccessStatus
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  approvedBy?: Prisma.UserUpdateOneWithoutApprovalsGrantedNestedInput
+  approvalsGranted?: Prisma.UserUpdateManyWithoutApprovedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCategoryAccessesInput = {
@@ -405,6 +744,63 @@ export type UserUncheckedUpdateWithoutCategoryAccessesInput = {
   firebaseUid?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  accessStatus?: Prisma.EnumUserAccessStatusFieldUpdateOperationsInput | $Enums.UserAccessStatus
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  approvalsGranted?: Prisma.UserUncheckedUpdateManyWithoutApprovedByNestedInput
+}
+
+export type UserCreateManyApprovedByInput = {
+  id?: string
+  firebaseUid: string
+  email?: string | null
+  displayName?: string | null
+  role?: $Enums.UserRole
+  accessStatus?: $Enums.UserAccessStatus
+  approvedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type UserUpdateWithoutApprovedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firebaseUid?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  accessStatus?: Prisma.EnumUserAccessStatusFieldUpdateOperationsInput | $Enums.UserAccessStatus
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  approvalsGranted?: Prisma.UserUpdateManyWithoutApprovedByNestedInput
+  categoryAccesses?: Prisma.UserCategoryAccessUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutApprovedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firebaseUid?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  accessStatus?: Prisma.EnumUserAccessStatusFieldUpdateOperationsInput | $Enums.UserAccessStatus
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  approvalsGranted?: Prisma.UserUncheckedUpdateManyWithoutApprovedByNestedInput
+  categoryAccesses?: Prisma.UserCategoryAccessUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateManyWithoutApprovedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firebaseUid?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  accessStatus?: Prisma.EnumUserAccessStatusFieldUpdateOperationsInput | $Enums.UserAccessStatus
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -415,10 +811,12 @@ export type UserUncheckedUpdateWithoutCategoryAccessesInput = {
  */
 
 export type UserCountOutputType = {
+  approvalsGranted: number
   categoryAccesses: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  approvalsGranted?: boolean | UserCountOutputTypeCountApprovalsGrantedArgs
   categoryAccesses?: boolean | UserCountOutputTypeCountCategoryAccessesArgs
 }
 
@@ -435,6 +833,13 @@ export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountApprovalsGrantedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountCategoryAccessesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.UserCategoryAccessWhereInput
 }
@@ -445,8 +850,14 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   firebaseUid?: boolean
   email?: boolean
   displayName?: boolean
+  role?: boolean
+  accessStatus?: boolean
+  approvedAt?: boolean
+  approvedByUserId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  approvedBy?: boolean | Prisma.User$approvedByArgs<ExtArgs>
+  approvalsGranted?: boolean | Prisma.User$approvalsGrantedArgs<ExtArgs>
   categoryAccesses?: boolean | Prisma.User$categoryAccessesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -456,8 +867,13 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   firebaseUid?: boolean
   email?: boolean
   displayName?: boolean
+  role?: boolean
+  accessStatus?: boolean
+  approvedAt?: boolean
+  approvedByUserId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  approvedBy?: boolean | Prisma.User$approvedByArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -465,8 +881,13 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   firebaseUid?: boolean
   email?: boolean
   displayName?: boolean
+  role?: boolean
+  accessStatus?: boolean
+  approvedAt?: boolean
+  approvedByUserId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  approvedBy?: boolean | Prisma.User$approvedByArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
@@ -474,21 +895,33 @@ export type UserSelectScalar = {
   firebaseUid?: boolean
   email?: boolean
   displayName?: boolean
+  role?: boolean
+  accessStatus?: boolean
+  approvedAt?: boolean
+  approvedByUserId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firebaseUid" | "email" | "displayName" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firebaseUid" | "email" | "displayName" | "role" | "accessStatus" | "approvedAt" | "approvedByUserId" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  approvedBy?: boolean | Prisma.User$approvedByArgs<ExtArgs>
+  approvalsGranted?: boolean | Prisma.User$approvalsGrantedArgs<ExtArgs>
   categoryAccesses?: boolean | Prisma.User$categoryAccessesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  approvedBy?: boolean | Prisma.User$approvedByArgs<ExtArgs>
+}
+export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  approvedBy?: boolean | Prisma.User$approvedByArgs<ExtArgs>
+}
 
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
   objects: {
+    approvedBy: Prisma.$UserPayload<ExtArgs> | null
+    approvalsGranted: Prisma.$UserPayload<ExtArgs>[]
     categoryAccesses: Prisma.$UserCategoryAccessPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -496,6 +929,10 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     firebaseUid: string
     email: string | null
     displayName: string | null
+    role: $Enums.UserRole
+    accessStatus: $Enums.UserAccessStatus
+    approvedAt: Date | null
+    approvedByUserId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -892,6 +1329,8 @@ readonly fields: UserFieldRefs;
  */
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  approvedBy<T extends Prisma.User$approvedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$approvedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  approvalsGranted<T extends Prisma.User$approvalsGrantedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$approvalsGrantedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   categoryAccesses<T extends Prisma.User$categoryAccessesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$categoryAccessesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserCategoryAccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -926,6 +1365,10 @@ export interface UserFieldRefs {
   readonly firebaseUid: Prisma.FieldRef<"User", 'String'>
   readonly email: Prisma.FieldRef<"User", 'String'>
   readonly displayName: Prisma.FieldRef<"User", 'String'>
+  readonly role: Prisma.FieldRef<"User", 'UserRole'>
+  readonly accessStatus: Prisma.FieldRef<"User", 'UserAccessStatus'>
+  readonly approvedAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly approvedByUserId: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
@@ -1182,6 +1625,10 @@ export type UserCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    */
   data: Prisma.UserCreateManyInput | Prisma.UserCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1252,6 +1699,10 @@ export type UserUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many Users to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1318,6 +1769,49 @@ export type UserDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Limit how many Users to delete.
    */
   limit?: number
+}
+
+/**
+ * User.approvedBy
+ */
+export type User$approvedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * User.approvalsGranted
+ */
+export type User$approvalsGrantedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+  orderBy?: Prisma.UserOrderByWithRelationInput | Prisma.UserOrderByWithRelationInput[]
+  cursor?: Prisma.UserWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserScalarFieldEnum | Prisma.UserScalarFieldEnum[]
 }
 
 /**

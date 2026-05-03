@@ -1,13 +1,34 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  /* Fundo geral: cinza com leve tom esverdeado-azulado */
+  --background: #eef3f4;
+  --foreground: #0a1c22;
+  /* Azul petróleo — base da marca e da sidebar */
+  --petroleum-950: #051318;
+  --petroleum-900: #0b2832;
+  --petroleum-800: #123a47;
+  --petroleum-700: #1a4f60;
+  --petroleum-600: #256b7f;
+  /* Acento para CTAs e links fortes (harmoniza com o petróleo) */
+  --primary: #1a5f72;
+  --primary-hover: #154a5a;
+  --accent: #2a8fa5;
+  --accent-muted: #7eb8c6;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-petroleum-950: var(--petroleum-950);
+  --color-petroleum-900: var(--petroleum-900);
+  --color-petroleum-800: var(--petroleum-800);
+  --color-petroleum-700: var(--petroleum-700);
+  --color-petroleum-600: var(--petroleum-600);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-accent: var(--accent);
+  --color-accent-muted: var(--accent-muted);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

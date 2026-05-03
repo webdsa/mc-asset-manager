@@ -1,300 +1,237 @@
+import Image from "next/image";
 import Link from "next/link";
-import {
-  AlertTriangle,
-  BadgeCheck,
-  Boxes,
-  CalendarClock,
-  FileText,
-  MapPin,
-  PackagePlus,
-  ShieldCheck,
-  Tags,
-} from "lucide-react";
-import { InsuranceStatus, Prisma } from "@/generated/prisma/client";
-import {
-  formatCondition,
-  formatCurrency,
-  formatDate,
-  formatInsuranceStatus,
-} from "@/lib/format";
-import { itemInvoiceDownloadHref } from "@/lib/invoice";
+import { Suspense } from "react";
+import { Boxes, MapPin, Tag } from "lucide-react";
+import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
-import { InventoryFilterForm } from "@/app/inventory-filter-form";
-import { InventoryItemActions } from "@/app/inventory-item-actions";
-import { InventoryItemThumbnail } from "@/app/inventory-item-thumbnail";
+import { formatCondition } from "@/lib/format";
+import {
+  itemImageDisplaySrc,
+  itemImageNeedsUnoptimizedNextImage,
+} from "@/lib/item-image";
+import { PageHeader, pageMainInnerClass } from "@/components/page-header";
+import { PublicCatalogFilter } from "@/app/public-catalog-filter";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+export const metadata = {
+  title: "Catálogo público · Asset Manager",
+  description: "Lista de itens publicados pelas categorias configuradas.",
+};
+
 type PageProps = {
-  searchParams: Promise<{
-    q?: string | string[];
-    category?: string | string[];
-    insurance?: string | string[];
-  }>;
+  searchParams: Promise<{ categoria?: string | string[]; q?: string | string[] }>;
 };
 
 function pickSearchParam(value: string | string[] | undefined): string | undefined {
   if (value === undefined) {
     return undefined;
   }
-
   const raw = Array.isArray(value) ? value[0] : value;
   const trimmed = raw?.trim();
   return trimmed ? trimmed : undefined;
 }
 
-const insuranceTone: Record<string, string> = {
-  INSURED: "border-emerald-200 bg-emerald-50 text-emerald-700",
-  PENDING: "border-amber-200 bg-amber-50 text-amber-700",
-  EXPIRED: "border-rose-200 bg-rose-50 text-rose-700",
-  NOT_INSURED: "border-slate-200 bg-slate-100 text-slate-600",
-};
-
-export default async function Home({ searchParams }: PageProps) {
+export default async function PublicCatalogHomePage({ searchParams }: PageProps) {
   const params = await searchParams;
-  const query = pickSearchParam(params.q);
-  const category = pickSearchParam(params.category);
-  const insurance = pickSearchParam(params.insurance);
+  const categoryFilter = pickSearchParam(params.categoria);
+  const textQuery = pickSearchParam(params.q);
 
-  const where: Prisma.ItemWhereInput = {
-    ...(query
+  const publicCategories = await prisma.category.findMany({
+    where: { isPublic: true },
+    orderBy: { name: "asc" },
+    select: { id: true, name: true, color: true },
+  });
+
+  const categoryIds = publicCategories.map((c) => c.id);
+  const filterOk =
+    categoryFilter && categoryIds.includes(categoryFilter) ? categoryFilter : undefined;
+
+  const itemWhere: Prisma.ItemWhereInput = {
+    categoryId: filterOk ? filterOk : { in: categoryIds },
+    ...(textQuery
       ? {
           OR: [
-            { name: { contains: query, mode: "insensitive" } },
-            { brand: { contains: query, mode: "insensitive" } },
-            { model: { contains: query, mode: "insensitive" } },
-            { serialNumber: { contains: query, mode: "insensitive" } },
-            { location: { contains: query, mode: "insensitive" } },
+            { name: { contains: textQuery, mode: "insensitive" } },
+            { brand: { contains: textQuery, mode: "insensitive" } },
+            { model: { contains: textQuery, mode: "insensitive" } },
+            { description: { contains: textQuery, mode: "insensitive" } },
+            { location: { contains: textQuery, mode: "insensitive" } },
           ],
         }
       : {}),
-    ...(category ? { categoryId: category } : {}),
-    ...(insurance && Object.values(InsuranceStatus).includes(insurance as InsuranceStatus)
-      ? { insuranceStatus: insurance as InsuranceStatus }
-      : {}),
   };
 
-  const attentionWhere: Prisma.ItemWhereInput = {
-    OR: [
-      { insuranceStatus: InsuranceStatus.EXPIRED },
-      { insuranceStatus: InsuranceStatus.PENDING },
-      { condition: "NEEDS_REPAIR" },
-    ],
-  };
-
-  const [items, categories, totalItems, insuredItems, attentionItems, totalValue] =
-    await Promise.all([
-      prisma.item.findMany({
-        where,
-        include: {
-          category: true,
-          images: { orderBy: { createdAt: "asc" }, take: 1 },
-        },
-        orderBy: { updatedAt: "desc" },
-      }),
-      prisma.category.findMany({ orderBy: { name: "asc" } }),
-      prisma.item.count({ where }),
-      prisma.item.count({
-        where: { ...where, insuranceStatus: InsuranceStatus.INSURED },
-      }),
-      prisma.item.count({
-        where: { AND: [where, attentionWhere] },
-      }),
-      prisma.item.aggregate({
-        where,
-        _sum: { purchaseValue: true },
-      }),
-    ]);
+  const items =
+    publicCategories.length === 0
+      ? []
+      : await prisma.item.findMany({
+          where: itemWhere,
+          include: {
+            category: true,
+            images: { orderBy: { createdAt: "asc" }, take: 1 },
+          },
+          orderBy: [{ category: { name: "asc" } }, { name: "asc" }],
+        });
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-950">
-      <section className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="text-sm font-medium text-slate-500">Asset Manager</p>
-              <h1 className="mt-1 text-3xl font-semibold tracking-normal text-slate-950">
-                Inventário do estúdio
-              </h1>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Link
-                href="/categories"
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-800 shadow-sm transition hover:bg-slate-50"
-              >
-                <Tags size={18} />
-                Categorias
-              </Link>
-              <Link
-                href="/items/new"
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-slate-950 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
-              >
-                <PackagePlus size={18} />
-                Novo item
-              </Link>
-            </div>
+      <PageHeader>
+        <div className="flex flex-col gap-4">
+          <div>
+            <p className="text-sm font-medium text-primary">Catálogo público</p>
+            <h1 className="mt-1 text-3xl font-semibold tracking-normal text-slate-950">
+              Itens publicados
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm text-slate-600">
+              Esta página mostra apenas itens de categorias marcadas como públicas pelos
+              administradores. Não são exibidos valores, números de série nem documentos.
+            </p>
           </div>
-
-          <InventoryFilterForm
-            query={query ?? ""}
-            category={category ?? ""}
-            insurance={insurance ?? ""}
-            categories={categories.map((c) => ({ id: c.id, name: c.name }))}
-          />
+          {publicCategories.length > 0 ? (
+            <Suspense
+              fallback={
+                <div className="h-11 w-full max-w-xs animate-pulse rounded-md bg-slate-100/80" />
+              }
+            >
+              <PublicCatalogFilter
+                categories={publicCategories.map((c) => ({ id: c.id, name: c.name }))}
+                selectedId={filterOk ?? ""}
+                initialQuery={textQuery ?? ""}
+              />
+            </Suspense>
+          ) : null}
         </div>
-      </section>
+      </PageHeader>
 
-      <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Metric icon={<Boxes size={20} />} label="Itens cadastrados" value={totalItems} />
-          <Metric
-            icon={<ShieldCheck size={20} />}
-            label="Com seguro ativo"
-            value={insuredItems}
-          />
-          <Metric
-            icon={<AlertTriangle size={20} />}
-            label="Precisam atenção"
-            value={attentionItems}
-          />
-          <Metric
-            icon={<BadgeCheck size={20} />}
-            label="Valor declarado"
-            value={formatCurrency(totalValue._sum.purchaseValue?.toString())}
-          />
-        </div>
-
-        <div className="mt-6 overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
-          <div className="grid grid-cols-[96px_1.4fr_1fr_1fr_1fr_120px_88px] border-b border-slate-200 bg-slate-100 px-4 py-3 text-xs font-semibold uppercase text-slate-500 max-lg:hidden">
-            <span>Imagem</span>
-            <span>Item</span>
-            <span>Categoria</span>
-            <span>Local</span>
-            <span>Seguro</span>
-            <span>Compra</span>
-            <span className="text-right">Ações</span>
+      <section className={`${pageMainInnerClass} pb-16 pt-2`}>
+        {publicCategories.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-slate-200 bg-white px-6 py-16 text-center">
+            <Boxes className="mx-auto text-slate-300" size={36} />
+            <h2 className="mt-3 text-lg font-semibold text-slate-950">
+              Nenhuma categoria pública
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Quando um administrador publicar categorias, os itens aparecerão aqui.
+            </p>
           </div>
+        ) : items.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-slate-200 bg-white px-6 py-16 text-center">
+            <Tag className="mx-auto text-slate-300" size={36} />
+            <h2 className="mt-3 text-lg font-semibold text-slate-950">
+              {textQuery
+                ? "Nenhum item corresponde à pesquisa"
+                : "Nenhum item nesta seleção"}
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              {textQuery
+                ? "Tente outras palavras ou limpe a busca. A pesquisa aplica-se só às categorias públicas."
+                : "Ajuste o filtro de categoria ou adicione itens às categorias públicas."}
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3 lg:gap-0 lg:divide-y lg:divide-slate-100 lg:overflow-hidden lg:rounded-md lg:border lg:border-petroleum-900/12 lg:bg-white lg:shadow-sm">
+            <div className="hidden grid-cols-[96px_1.4fr_1fr_1fr_100px] border-b border-petroleum-900/10 bg-slate-100/80 px-4 py-3 text-xs font-semibold uppercase text-petroleum-700 lg:grid">
+              <span>Foto</span>
+              <span>Item</span>
+              <span>Categoria</span>
+              <span>Local</span>
+              <span>Ano</span>
+            </div>
+            {items.map((item) => {
+              const image = item.images[0];
+              const viewSrc = image ? itemImageDisplaySrc(item.id, image) : null;
 
-          {items.length ? (
-            <div className="divide-y divide-slate-100">
-              {items.map((item) => {
-                const image = item.images[0];
-                const invoiceHref = itemInvoiceDownloadHref(item);
-
-                return (
-                  <article
-                    key={item.id}
-                    className="grid gap-4 px-4 py-4 transition hover:bg-slate-50 lg:grid-cols-[96px_1.4fr_1fr_1fr_1fr_120px_88px] lg:items-center"
-                  >
-                    <InventoryItemThumbnail itemId={item.id} itemName={item.name} image={image} />
-
-                    <div className="min-w-0">
-                      <h2 className="truncate text-base font-semibold text-slate-950">
-                        {item.name}
-                      </h2>
-                      <p className="mt-1 truncate text-sm text-slate-500">
-                        {[item.brand, item.model, item.serialNumber].filter(Boolean).join(" • ") ||
-                          "Sem marca/modelo informado"}
-                      </p>
-                      <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-500">
-                        <span className="inline-flex items-center gap-1">
-                          <CalendarClock size={14} />
-                          {formatCondition(item.condition)}
-                        </span>
-                        {invoiceHref ? (
-                          <a
-                            href={invoiceHref}
-                            className="inline-flex items-center gap-1 font-medium text-slate-700 hover:text-slate-950"
-                            target="_blank"
-                          >
-                            <FileText size={14} />
-                            Nota fiscal
-                          </a>
-                        ) : null}
+              return (
+                <article
+                  key={item.id}
+                  className="
+                    grid gap-x-3 gap-y-2 px-4 py-4 transition
+                    max-lg:grid-cols-[6.75rem_1fr]
+                    max-lg:rounded-xl max-lg:border max-lg:border-slate-200 max-lg:bg-white max-lg:shadow-sm
+                    lg:grid-cols-[96px_minmax(0,1.4fr)_1fr_1fr_100px]
+                    lg:items-center lg:gap-4
+                    hover:bg-petroleum-800/5 max-lg:hover:bg-petroleum-800/5
+                  "
+                >
+                  <div className="relative h-20 w-24 shrink-0 overflow-hidden rounded-md bg-slate-100 max-lg:row-span-2 lg:h-20 lg:w-24">
+                    {viewSrc ? (
+                      <Image
+                        src={viewSrc}
+                        alt={image?.alt ?? item.name}
+                        fill
+                        sizes="(max-width: 1023px) 108px, 96px"
+                        unoptimized={itemImageNeedsUnoptimizedNextImage(viewSrc)}
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-slate-400">
+                        <Boxes size={28} />
                       </div>
-                    </div>
+                    )}
+                  </div>
 
-                    <div>
-                      <span
-                        className="inline-flex rounded-md px-2.5 py-1 text-xs font-semibold text-white"
-                        style={{ backgroundColor: item.category.color }}
-                      >
-                        {item.category.name}
+                  <div className="min-w-0 lg:col-start-2">
+                    <h2 className="text-base font-semibold leading-snug text-slate-950">
+                      <span className="line-clamp-2 lg:truncate">{item.name}</span>
+                    </h2>
+                    <p className="mt-1 text-sm leading-snug text-slate-500">
+                      <span className="line-clamp-2 lg:truncate">
+                        {[item.brand, item.model].filter(Boolean).join(" • ") ||
+                          "Sem marca/modelo informado"}
+                      </span>
+                    </p>
+                    {item.description ? (
+                      <p className="mt-2 line-clamp-2 text-sm text-slate-600">{item.description}</p>
+                    ) : null}
+                    <p className="mt-2 text-xs text-slate-500">{formatCondition(item.condition)}</p>
+                  </div>
+
+                  <div className="min-w-0 max-lg:col-span-2 lg:col-start-3">
+                    <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400 lg:hidden">
+                      Categoria
+                    </p>
+                    <span
+                      className="inline-flex max-w-full rounded-md px-2.5 py-1 text-xs font-semibold text-white"
+                      style={{ backgroundColor: item.category.color }}
+                    >
+                      <span className="truncate">{item.category.name}</span>
+                    </span>
+                  </div>
+
+                  <div className="min-w-0 max-lg:col-span-2 lg:col-start-4">
+                    <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400 lg:hidden">
+                      Local
+                    </p>
+                    <div className="inline-flex min-h-9 max-w-full items-start gap-2 text-sm text-slate-600">
+                      <MapPin size={16} className="mt-0.5 shrink-0 text-slate-400" />
+                      <span className="min-w-0 break-words leading-snug">
+                        {item.location || "—"}
                       </span>
                     </div>
+                  </div>
 
-                    <div className="inline-flex items-center gap-2 text-sm text-slate-600">
-                      <MapPin size={16} className="text-slate-400" />
-                      {item.location || "Sem local"}
-                    </div>
+                  <div className="min-w-0 max-lg:col-span-2 lg:col-start-5">
+                    <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400 lg:hidden">
+                      Ano de compra
+                    </p>
+                    <p className="text-sm font-semibold text-slate-800">{item.purchaseYear}</p>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
 
-                    <div>
-                      <span
-                        className={`inline-flex rounded-md border px-2.5 py-1 text-xs font-semibold ${
-                          insuranceTone[item.insuranceStatus]
-                        }`}
-                      >
-                        {formatInsuranceStatus(item.insuranceStatus)}
-                      </span>
-                      {item.insuranceExpires ? (
-                        <p className="mt-1 text-xs text-slate-500">
-                          até {formatDate(item.insuranceExpires)}
-                        </p>
-                      ) : null}
-                    </div>
-
-                    <div className="text-sm">
-                      <p className="font-semibold text-slate-800">{item.purchaseYear}</p>
-                      <p className="text-slate-500">
-                        {formatCurrency(item.purchaseValue?.toString())}
-                      </p>
-                    </div>
-
-                    <div className="flex justify-end lg:justify-end">
-                      <InventoryItemActions itemId={item.id} itemName={item.name} />
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="px-6 py-16 text-center">
-              <Boxes className="mx-auto text-slate-300" size={36} />
-              <h2 className="mt-3 text-lg font-semibold text-slate-950">
-                Nenhum item encontrado
-              </h2>
-              <p className="mt-1 text-sm text-slate-500">
-                Ajuste os filtros ou cadastre o primeiro ativo do estúdio.
-              </p>
-            </div>
-          )}
-        </div>
+        <p className="mt-8 text-center text-xs text-slate-400">
+          <Link href="/login" className="font-medium text-petroleum-800 hover:text-primary">
+            Entrar no Asset Manager
+          </Link>
+          {" · "}
+          Catálogo apenas informativo.
+        </p>
       </section>
     </main>
-  );
-}
-
-function Metric({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: React.ReactNode;
-}) {
-  return (
-    <div className="rounded-md border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="flex items-center gap-3">
-        <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-slate-100 text-slate-700">
-          {icon}
-        </span>
-        <div>
-          <p className="text-sm text-slate-500">{label}</p>
-          <p className="mt-1 text-xl font-semibold text-slate-950">{value}</p>
-        </div>
-      </div>
-    </div>
   );
 }

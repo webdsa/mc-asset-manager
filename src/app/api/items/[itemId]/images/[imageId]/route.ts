@@ -31,21 +31,29 @@ export async function GET(
   request: NextRequest,
   context: { params: Promise<{ itemId: string; imageId: string }> },
 ) {
-  const authResult = await authenticateApiRequest(request);
-  if (authResult instanceof NextResponse) {
-    return authResult;
-  }
-
   const { itemId, imageId } = await context.params;
   const forceDownload = request.nextUrl.searchParams.get("download") === "1";
 
   const image = await prisma.itemImage.findFirst({
     where: { id: imageId, itemId },
-    select: { url: true, fileName: true },
+    select: {
+      url: true,
+      fileName: true,
+      item: { select: { category: { select: { isPublic: true } } } },
+    },
   });
 
   if (!image) {
     return new NextResponse("Not found", { status: 404 });
+  }
+
+  const allowWithoutAuth = image.item.category.isPublic;
+
+  if (!allowWithoutAuth) {
+    const authResult = await authenticateApiRequest(request);
+    if (authResult instanceof NextResponse) {
+      return authResult;
+    }
   }
 
   const pathname = privateItemImagePathname(image.url);

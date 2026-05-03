@@ -17,6 +17,7 @@ import { EditItemImagesPanel } from "@/app/items/edit-item-images-panel";
 import { InsuranceQuoteEmailButton } from "@/app/items/insurance-quote-email-button";
 import { PurchaseValueField } from "@/app/items/purchase-value-field";
 import { INSURANCE_POLICY_OPTIONS } from "@/lib/insurance-policy-estimate";
+import { PageHeader } from "@/components/page-header";
 
 export type ItemFormCategory = { id: string; name: string };
 
@@ -72,7 +73,7 @@ export function ItemForm({
   action,
   submitLabel,
   initial,
-  backHref = "/",
+  backHref = "/admin",
   backLabel = "Voltar ao inventário",
   headingEyebrow,
   headingTitle,
@@ -108,22 +109,20 @@ export function ItemForm({
       : null;
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-950">
-      <section className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-6 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-background text-slate-950">
+      <PageHeader innerClassName="flex flex-col gap-4">
           <Link
             href={backHref}
-            className="inline-flex w-fit items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-slate-950"
+            className="inline-flex w-fit items-center gap-2 text-sm font-medium text-petroleum-800 transition hover:text-primary"
           >
             <ArrowLeft size={17} />
             {backLabel}
           </Link>
           <div>
-            <p className="text-sm font-medium text-slate-500">{headingEyebrow}</p>
+            <p className="text-sm font-medium text-primary">{headingEyebrow}</p>
             <h1 className="mt-1 text-3xl font-semibold tracking-normal">{headingTitle}</h1>
           </div>
-        </div>
-      </section>
+      </PageHeader>
 
       <form
         id={ITEM_FORM_ID}
@@ -405,7 +404,7 @@ export function ItemForm({
               </Field>
             </Section>
 
-            <button className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-slate-950 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800">
+            <button className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-primary px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-hover">
               <Save size={18} />
               {submitLabel}
             </button>
@@ -417,10 +416,10 @@ export function ItemForm({
 }
 
 const inputClass =
-  "h-11 w-full rounded-md border border-slate-200 bg-white px-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-4 focus:ring-slate-100";
+  "h-11 w-full rounded-md border border-slate-200 bg-white px-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-primary/10";
 
 const textareaClass =
-  "w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-4 focus:ring-slate-100";
+  "w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-primary/10";
 
 function Section({
   icon,
@@ -434,9 +433,9 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-md border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="rounded-md border border-petroleum-900/10 bg-white p-5 shadow-sm">
       <div className="mb-5 flex gap-3">
-        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-slate-100 text-slate-700">
+        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-petroleum-800/10 text-petroleum-800">
           {icon}
         </span>
         <div>

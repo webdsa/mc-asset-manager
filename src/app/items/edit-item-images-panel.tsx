@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { itemImageDisplaySrc, itemImageDownloadHref } from "@/lib/item-image";
+import {
+  itemImageDisplaySrc,
+  itemImageDownloadHref,
+  itemImageNeedsUnoptimizedNextImage,
+} from "@/lib/item-image";
 import { ItemImageRemoveButton } from "@/app/items/item-image-remove-button";
 import { ItemImageLightbox } from "@/app/items/item-image-lightbox";
 
@@ -41,6 +45,7 @@ export function EditItemImagesPanel({
                   alt={img.alt ?? itemName}
                   fill
                   sizes="(max-width: 1024px) 45vw, 200px"
+                  unoptimized={itemImageNeedsUnoptimizedNextImage(viewSrc)}
                   className="object-cover"
                 />
                 <button

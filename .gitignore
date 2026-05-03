@@ -40,6 +40,9 @@ yarn-error.log*
 .env*
 !.env.example
 
+# database dumps (scripts/export-local-db-for-neon.bash)
+/db-export/
+
 # vercel
 .vercel
 

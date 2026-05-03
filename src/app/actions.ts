@@ -331,7 +331,8 @@ export async function createItem(formData: FormData) {
   });
 
   revalidatePath("/");
-  redirect("/");
+  revalidatePath("/admin");
+  redirect("/admin");
 }
 
 export async function updateItem(formData: FormData) {
@@ -438,8 +439,9 @@ export async function updateItem(formData: FormData) {
   }
 
   revalidatePath("/");
+  revalidatePath("/admin");
   revalidatePath(`/items/${itemId}/edit`);
-  redirect("/");
+  redirect("/admin");
 }
 
 export async function deleteItemImage(formData: FormData) {
@@ -461,6 +463,7 @@ export async function deleteItemImage(formData: FormData) {
   await prisma.itemImage.delete({ where: { id: imageId } });
 
   revalidatePath("/");
+  revalidatePath("/admin");
   revalidatePath(`/items/${itemId}/edit`);
   redirect(`/items/${itemId}/edit`);
 }
@@ -491,7 +494,8 @@ export async function deleteItem(formData: FormData) {
   await removeLocalInvoiceFile(invoiceUrl);
 
   revalidatePath("/");
-  redirect("/");
+  revalidatePath("/admin");
+  redirect("/admin");
 }
 
 function normalizeHexColor(raw: string): string | null {
@@ -531,6 +535,7 @@ export async function createCategory(formData: FormData) {
   await prisma.category.create({ data: { name, color } });
 
   revalidatePath("/");
+  revalidatePath("/admin");
   revalidatePath("/categories");
   redirect("/categories");
 }
@@ -561,6 +566,7 @@ export async function updateCategory(formData: FormData) {
   });
 
   revalidatePath("/");
+  revalidatePath("/admin");
   revalidatePath("/categories");
   redirect("/categories");
 }
@@ -587,6 +593,7 @@ export async function deleteCategory(formData: FormData) {
   await prisma.category.delete({ where: { id: categoryId } });
 
   revalidatePath("/");
+  revalidatePath("/admin");
   revalidatePath("/categories");
   redirect("/categories");
 }

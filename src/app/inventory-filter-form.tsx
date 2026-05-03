@@ -2,7 +2,7 @@
 
 import Form from "next/form";
 import { Search } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { startTransition, useCallback, useEffect, useRef, useState } from "react";
 import { InsuranceStatus } from "@/generated/prisma/browser";
 import { formatInsuranceStatus } from "@/lib/format";
 
@@ -29,9 +29,11 @@ export function InventoryFilterForm({
   const [insuranceStatus, setInsuranceStatus] = useState(insurance);
 
   useEffect(() => {
-    setQ(query);
-    setCategoryId(category);
-    setInsuranceStatus(insurance);
+    startTransition(() => {
+      setQ(query);
+      setCategoryId(category);
+      setInsuranceStatus(insurance);
+    });
   }, [query, category, insurance]);
 
   const submitForm = useCallback(() => {

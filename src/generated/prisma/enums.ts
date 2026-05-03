@@ -35,3 +35,21 @@ export const CategoryAccessLevel = {
 } as const
 
 export type CategoryAccessLevel = (typeof CategoryAccessLevel)[keyof typeof CategoryAccessLevel]
+
+
+export const UserRole = {
+  USER: 'USER',
+  ADMIN: 'ADMIN',
+  OWNER: 'OWNER'
+} as const
+
+export type UserRole = (typeof UserRole)[keyof typeof UserRole]
+
+
+export const UserAccessStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REVOKED: 'REVOKED'
+} as const
+
+export type UserAccessStatus = (typeof UserAccessStatus)[keyof typeof UserAccessStatus]

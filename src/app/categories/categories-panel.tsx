@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, Tags, Trash2 } from "lucide-react";
 import { createCategory, deleteCategory, updateCategory } from "@/app/actions";
 import { CategoryColorField } from "@/app/categories/category-color-field";
+import { PageHeader } from "@/components/page-header";
 
 export type CategoryListRow = {
   id: string;
@@ -15,22 +16,21 @@ const fieldClass =
 
 export function CategoriesPanel({ categories }: { categories: CategoryListRow[] }) {
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-950">
-      <section className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-6 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-background text-slate-950">
+      <PageHeader innerClassName="flex flex-col gap-4">
           <Link
-            href="/"
-            className="inline-flex w-fit items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-slate-950"
+            href="/admin"
+            className="inline-flex w-fit items-center gap-2 text-sm font-medium text-petroleum-800 transition hover:text-primary"
           >
             <ArrowLeft size={17} />
             Voltar ao inventário
           </Link>
           <div className="flex items-start gap-3">
-            <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-slate-100 text-slate-700">
+            <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-petroleum-800/10 text-petroleum-800">
               <Tags size={20} />
             </span>
             <div>
-              <p className="text-sm font-medium text-slate-500">Configuração</p>
+              <p className="text-sm font-medium text-primary">Configuração</p>
               <h1 className="mt-1 text-2xl font-semibold tracking-normal text-slate-950">
                 Categorias
               </h1>
@@ -39,8 +39,7 @@ export function CategoriesPanel({ categories }: { categories: CategoryListRow[] 
               </p>
             </div>
           </div>
-        </div>
-      </section>
+      </PageHeader>
 
       <section className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="rounded-md border border-slate-200 bg-white p-5 shadow-sm">
@@ -70,7 +69,7 @@ export function CategoriesPanel({ categories }: { categories: CategoryListRow[] 
             </div>
             <button
               type="submit"
-              className="h-10 shrink-0 rounded-md bg-slate-950 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
+              className="h-10 shrink-0 rounded-md bg-primary px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-hover"
             >
               Adicionar
             </button>

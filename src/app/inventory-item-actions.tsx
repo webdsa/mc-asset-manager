@@ -29,10 +29,10 @@ export function InventoryItemActions({
   }
 
   return (
-    <div className="flex items-center justify-end gap-1 sm:justify-start">
+    <div className="flex items-center justify-end gap-1 sm:justify-start lg:gap-1">
       <Link
         href={`/items/${itemId}/edit`}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-950"
+        className="inline-flex h-10 w-10 touch-manipulation items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-950 lg:h-9 lg:w-9"
         title="Editar"
         aria-label={`Editar ${itemName}`}
       >
@@ -42,7 +42,7 @@ export function InventoryItemActions({
         type="button"
         onClick={handleDelete}
         disabled={pending}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-200 bg-white text-rose-600 shadow-sm transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700 disabled:opacity-50"
+        className="inline-flex h-10 w-10 touch-manipulation items-center justify-center rounded-md border border-slate-200 bg-white text-rose-600 shadow-sm transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700 disabled:opacity-50 lg:h-9 lg:w-9"
         title="Excluir"
         aria-label={`Excluir ${itemName}`}
       >

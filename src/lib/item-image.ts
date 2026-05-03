@@ -11,6 +11,14 @@ export function itemImageDisplaySrc(
   return image.url;
 }
 
+/**
+ * URLs sob `/api/items/.../images/...` exigem cookie de sessão. O otimizador de `next/image`
+ * corre no servidor sem esse cookie — usar `unoptimized` para o pedido ir ao browser.
+ */
+export function itemImageNeedsUnoptimizedNextImage(displaySrc: string): boolean {
+  return displaySrc.startsWith("/api/");
+}
+
 export function privateItemImagePathname(url: string): string | null {
   if (!url.startsWith(PRIVATE_ITEM_IMAGE_PREFIX)) {
     return null;

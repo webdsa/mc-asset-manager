@@ -821,6 +821,7 @@ export const CategoryScalarFieldEnum = {
   id: 'id',
   name: 'name',
   color: 'color',
+  isPublic: 'isPublic',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -833,6 +834,10 @@ export const UserScalarFieldEnum = {
   firebaseUid: 'firebaseUid',
   email: 'email',
   displayName: 'displayName',
+  role: 'role',
+  accessStatus: 'accessStatus',
+  approvedAt: 'approvedAt',
+  approvedByUserId: 'approvedByUserId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -936,6 +941,13 @@ export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMod
 
 
 /**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
  * Reference to a field of type 'DateTime'
  */
 export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -946,6 +958,34 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'DateTime[]'
  */
 export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+/**
+ * Reference to a field of type 'UserRole'
+ */
+export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
+    
+
+
+/**
+ * Reference to a field of type 'UserRole[]'
+ */
+export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole[]'>
+    
+
+
+/**
+ * Reference to a field of type 'UserAccessStatus'
+ */
+export type EnumUserAccessStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserAccessStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'UserAccessStatus[]'
+ */
+export type ListEnumUserAccessStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserAccessStatus[]'>
     
 
 
