@@ -133,7 +133,7 @@ function purchaseYearFromApi(
 }
 
 function parseDataUrl(dataUrl: string): { mime: string; buffer: Buffer } | null {
-  const m = dataUrl.match(/^data:([^;]+);base64,(.+)$/s);
+  const m = dataUrl.match(/^data:([^;]+);base64,([\s\S]+)$/);
   if (!m) {
     return null;
   }
@@ -261,18 +261,20 @@ async function main() {
     await prisma.$disconnect();
     process.exit(1);
   }
+  const categoryId = category.id;
 
   const listUrl = `${base}/api/items?idsOnly=true&categoria=${encodeURIComponent(categoryName)}`;
   console.log(`Listando IDs: ${listUrl}`);
   const listPayload = await fetchJson<{ ids?: string[] }>(listUrl, {
     signal: AbortSignal.timeout(180_000),
   });
-  const ids = listPayload.ids;
-  if (!Array.isArray(ids) || ids.length === 0) {
+  const idsRaw = listPayload.ids;
+  if (!Array.isArray(idsRaw) || idsRaw.length === 0) {
     console.log("Nenhum id retornado.");
     await prisma.$disconnect();
     return;
   }
+  const ids: string[] = idsRaw;
 
   console.log(`${ids.length} itens a processar (concorrência ${concurrency})${dryRun ? " [DRY-RUN]" : ""}.`);
 
@@ -326,7 +328,7 @@ async function main() {
       const data = {
         name,
         description: null as string | null,
-        categoryId: category.id,
+        categoryId,
         brand: str(raw.marca),
         model: str(raw.modelo),
         serialNumber: null as string | null,
