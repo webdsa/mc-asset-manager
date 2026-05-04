@@ -43,17 +43,22 @@ export function PublicCatalogPagination({
   pageSize: number;
   query: PublicCatalogQueryForPagination;
 }) {
-  if (totalCount === 0 || totalPages <= 1) {
+  if (totalCount === 0) {
     return null;
   }
 
   const start = (page - 1) * pageSize + 1;
   const end = Math.min(page * pageSize, totalCount);
+  const showPageControls = totalPages > 1;
 
   return (
     <nav
-      className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-slate-200 pt-8 sm:flex-row"
-      aria-label="Paginação do catálogo"
+      className={
+        showPageControls
+          ? "mt-8 flex flex-col items-center justify-between gap-4 border-t border-slate-200 pt-8 sm:flex-row"
+          : "mt-8 flex justify-center border-t border-slate-200 pt-8"
+      }
+      aria-label={showPageControls ? "Paginação do catálogo" : "Resumo do catálogo"}
     >
       <p className="text-sm text-slate-600">
         Mostrando{" "}
@@ -62,6 +67,7 @@ export function PublicCatalogPagination({
         </span>{" "}
         de <span className="font-medium text-slate-950">{totalCount}</span>
       </p>
+      {showPageControls ? (
       <div className="flex flex-wrap items-center justify-center gap-2">
         {page <= 1 ? (
           <span className={disabledBase} aria-disabled="true">
@@ -92,6 +98,7 @@ export function PublicCatalogPagination({
           </Link>
         )}
       </div>
+      ) : null}
     </nav>
   );
 }
