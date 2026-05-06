@@ -118,12 +118,13 @@ async function main() {
   const listPayload = await fetchJson<{ ids?: string[] }>(listUrl, {
     signal: AbortSignal.timeout(180_000),
   });
-  const ids = listPayload.ids;
-  if (!Array.isArray(ids) || ids.length === 0) {
+  const idsRaw = listPayload.ids;
+  if (!Array.isArray(idsRaw) || idsRaw.length === 0) {
     console.log("Nenhum id retornado.");
     await prisma.$disconnect();
     return;
   }
+  const ids: string[] = idsRaw;
 
   console.log(
     `${ids.length} itens na API (concorrência ${concurrency}). Modo: ${apply ? "APLICAR" : "simulação (use --apply para gravar)"}.`,
