@@ -47,6 +47,7 @@ export type ItemMinAggregateOutputType = {
   model: string | null
   serialNumber: string | null
   patrimonyCode: string | null
+  qrCode: string | null
   quantity: number | null
   location: string | null
   purchaseYear: number | null
@@ -62,6 +63,7 @@ export type ItemMinAggregateOutputType = {
   notes: string | null
   invoiceFileName: string | null
   invoiceFileUrl: string | null
+  hiddenAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -75,6 +77,7 @@ export type ItemMaxAggregateOutputType = {
   model: string | null
   serialNumber: string | null
   patrimonyCode: string | null
+  qrCode: string | null
   quantity: number | null
   location: string | null
   purchaseYear: number | null
@@ -90,6 +93,7 @@ export type ItemMaxAggregateOutputType = {
   notes: string | null
   invoiceFileName: string | null
   invoiceFileUrl: string | null
+  hiddenAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -103,6 +107,7 @@ export type ItemCountAggregateOutputType = {
   model: number
   serialNumber: number
   patrimonyCode: number
+  qrCode: number
   quantity: number
   location: number
   purchaseYear: number
@@ -118,6 +123,7 @@ export type ItemCountAggregateOutputType = {
   notes: number
   invoiceFileName: number
   invoiceFileUrl: number
+  hiddenAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -145,6 +151,7 @@ export type ItemMinAggregateInputType = {
   model?: true
   serialNumber?: true
   patrimonyCode?: true
+  qrCode?: true
   quantity?: true
   location?: true
   purchaseYear?: true
@@ -160,6 +167,7 @@ export type ItemMinAggregateInputType = {
   notes?: true
   invoiceFileName?: true
   invoiceFileUrl?: true
+  hiddenAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -173,6 +181,7 @@ export type ItemMaxAggregateInputType = {
   model?: true
   serialNumber?: true
   patrimonyCode?: true
+  qrCode?: true
   quantity?: true
   location?: true
   purchaseYear?: true
@@ -188,6 +197,7 @@ export type ItemMaxAggregateInputType = {
   notes?: true
   invoiceFileName?: true
   invoiceFileUrl?: true
+  hiddenAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -201,6 +211,7 @@ export type ItemCountAggregateInputType = {
   model?: true
   serialNumber?: true
   patrimonyCode?: true
+  qrCode?: true
   quantity?: true
   location?: true
   purchaseYear?: true
@@ -216,6 +227,7 @@ export type ItemCountAggregateInputType = {
   notes?: true
   invoiceFileName?: true
   invoiceFileUrl?: true
+  hiddenAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -316,6 +328,7 @@ export type ItemGroupByOutputType = {
   model: string | null
   serialNumber: string | null
   patrimonyCode: string | null
+  qrCode: string | null
   quantity: number
   location: string | null
   purchaseYear: number
@@ -331,6 +344,7 @@ export type ItemGroupByOutputType = {
   notes: string | null
   invoiceFileName: string | null
   invoiceFileUrl: string | null
+  hiddenAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: ItemCountAggregateOutputType | null
@@ -367,6 +381,7 @@ export type ItemWhereInput = {
   model?: Prisma.StringNullableFilter<"Item"> | string | null
   serialNumber?: Prisma.StringNullableFilter<"Item"> | string | null
   patrimonyCode?: Prisma.StringNullableFilter<"Item"> | string | null
+  qrCode?: Prisma.StringNullableFilter<"Item"> | string | null
   quantity?: Prisma.IntFilter<"Item"> | number
   location?: Prisma.StringNullableFilter<"Item"> | string | null
   purchaseYear?: Prisma.IntFilter<"Item"> | number
@@ -382,6 +397,7 @@ export type ItemWhereInput = {
   notes?: Prisma.StringNullableFilter<"Item"> | string | null
   invoiceFileName?: Prisma.StringNullableFilter<"Item"> | string | null
   invoiceFileUrl?: Prisma.StringNullableFilter<"Item"> | string | null
+  hiddenAt?: Prisma.DateTimeNullableFilter<"Item"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Item"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Item"> | Date | string
   category?: Prisma.XOR<Prisma.CategoryScalarRelationFilter, Prisma.CategoryWhereInput>
@@ -397,6 +413,7 @@ export type ItemOrderByWithRelationInput = {
   model?: Prisma.SortOrderInput | Prisma.SortOrder
   serialNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   patrimonyCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  qrCode?: Prisma.SortOrderInput | Prisma.SortOrder
   quantity?: Prisma.SortOrder
   location?: Prisma.SortOrderInput | Prisma.SortOrder
   purchaseYear?: Prisma.SortOrder
@@ -412,6 +429,7 @@ export type ItemOrderByWithRelationInput = {
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   invoiceFileName?: Prisma.SortOrderInput | Prisma.SortOrder
   invoiceFileUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  hiddenAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   category?: Prisma.CategoryOrderByWithRelationInput
@@ -430,6 +448,7 @@ export type ItemWhereUniqueInput = Prisma.AtLeast<{
   categoryId?: Prisma.StringFilter<"Item"> | string
   brand?: Prisma.StringNullableFilter<"Item"> | string | null
   model?: Prisma.StringNullableFilter<"Item"> | string | null
+  qrCode?: Prisma.StringNullableFilter<"Item"> | string | null
   quantity?: Prisma.IntFilter<"Item"> | number
   location?: Prisma.StringNullableFilter<"Item"> | string | null
   purchaseYear?: Prisma.IntFilter<"Item"> | number
@@ -445,6 +464,7 @@ export type ItemWhereUniqueInput = Prisma.AtLeast<{
   notes?: Prisma.StringNullableFilter<"Item"> | string | null
   invoiceFileName?: Prisma.StringNullableFilter<"Item"> | string | null
   invoiceFileUrl?: Prisma.StringNullableFilter<"Item"> | string | null
+  hiddenAt?: Prisma.DateTimeNullableFilter<"Item"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Item"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Item"> | Date | string
   category?: Prisma.XOR<Prisma.CategoryScalarRelationFilter, Prisma.CategoryWhereInput>
@@ -460,6 +480,7 @@ export type ItemOrderByWithAggregationInput = {
   model?: Prisma.SortOrderInput | Prisma.SortOrder
   serialNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   patrimonyCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  qrCode?: Prisma.SortOrderInput | Prisma.SortOrder
   quantity?: Prisma.SortOrder
   location?: Prisma.SortOrderInput | Prisma.SortOrder
   purchaseYear?: Prisma.SortOrder
@@ -475,6 +496,7 @@ export type ItemOrderByWithAggregationInput = {
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   invoiceFileName?: Prisma.SortOrderInput | Prisma.SortOrder
   invoiceFileUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  hiddenAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ItemCountOrderByAggregateInput
@@ -496,6 +518,7 @@ export type ItemScalarWhereWithAggregatesInput = {
   model?: Prisma.StringNullableWithAggregatesFilter<"Item"> | string | null
   serialNumber?: Prisma.StringNullableWithAggregatesFilter<"Item"> | string | null
   patrimonyCode?: Prisma.StringNullableWithAggregatesFilter<"Item"> | string | null
+  qrCode?: Prisma.StringNullableWithAggregatesFilter<"Item"> | string | null
   quantity?: Prisma.IntWithAggregatesFilter<"Item"> | number
   location?: Prisma.StringNullableWithAggregatesFilter<"Item"> | string | null
   purchaseYear?: Prisma.IntWithAggregatesFilter<"Item"> | number
@@ -511,6 +534,7 @@ export type ItemScalarWhereWithAggregatesInput = {
   notes?: Prisma.StringNullableWithAggregatesFilter<"Item"> | string | null
   invoiceFileName?: Prisma.StringNullableWithAggregatesFilter<"Item"> | string | null
   invoiceFileUrl?: Prisma.StringNullableWithAggregatesFilter<"Item"> | string | null
+  hiddenAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Item"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Item"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Item"> | Date | string
 }
@@ -523,6 +547,7 @@ export type ItemCreateInput = {
   model?: string | null
   serialNumber?: string | null
   patrimonyCode?: string | null
+  qrCode?: string | null
   quantity?: number
   location?: string | null
   purchaseYear: number
@@ -538,6 +563,7 @@ export type ItemCreateInput = {
   notes?: string | null
   invoiceFileName?: string | null
   invoiceFileUrl?: string | null
+  hiddenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   category: Prisma.CategoryCreateNestedOneWithoutItemsInput
@@ -553,6 +579,7 @@ export type ItemUncheckedCreateInput = {
   model?: string | null
   serialNumber?: string | null
   patrimonyCode?: string | null
+  qrCode?: string | null
   quantity?: number
   location?: string | null
   purchaseYear: number
@@ -568,6 +595,7 @@ export type ItemUncheckedCreateInput = {
   notes?: string | null
   invoiceFileName?: string | null
   invoiceFileUrl?: string | null
+  hiddenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   images?: Prisma.ItemImageUncheckedCreateNestedManyWithoutItemInput
@@ -581,6 +609,7 @@ export type ItemUpdateInput = {
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serialNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patrimonyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   purchaseYear?: Prisma.IntFieldUpdateOperationsInput | number
@@ -596,6 +625,7 @@ export type ItemUpdateInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceFileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hiddenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.CategoryUpdateOneRequiredWithoutItemsNestedInput
@@ -611,6 +641,7 @@ export type ItemUncheckedUpdateInput = {
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serialNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patrimonyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   purchaseYear?: Prisma.IntFieldUpdateOperationsInput | number
@@ -626,6 +657,7 @@ export type ItemUncheckedUpdateInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceFileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hiddenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   images?: Prisma.ItemImageUncheckedUpdateManyWithoutItemNestedInput
@@ -640,6 +672,7 @@ export type ItemCreateManyInput = {
   model?: string | null
   serialNumber?: string | null
   patrimonyCode?: string | null
+  qrCode?: string | null
   quantity?: number
   location?: string | null
   purchaseYear: number
@@ -655,6 +688,7 @@ export type ItemCreateManyInput = {
   notes?: string | null
   invoiceFileName?: string | null
   invoiceFileUrl?: string | null
+  hiddenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -667,6 +701,7 @@ export type ItemUpdateManyMutationInput = {
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serialNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patrimonyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   purchaseYear?: Prisma.IntFieldUpdateOperationsInput | number
@@ -682,6 +717,7 @@ export type ItemUpdateManyMutationInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceFileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hiddenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -695,6 +731,7 @@ export type ItemUncheckedUpdateManyInput = {
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serialNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patrimonyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   purchaseYear?: Prisma.IntFieldUpdateOperationsInput | number
@@ -710,6 +747,7 @@ export type ItemUncheckedUpdateManyInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceFileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hiddenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -733,6 +771,7 @@ export type ItemCountOrderByAggregateInput = {
   model?: Prisma.SortOrder
   serialNumber?: Prisma.SortOrder
   patrimonyCode?: Prisma.SortOrder
+  qrCode?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   location?: Prisma.SortOrder
   purchaseYear?: Prisma.SortOrder
@@ -748,6 +787,7 @@ export type ItemCountOrderByAggregateInput = {
   notes?: Prisma.SortOrder
   invoiceFileName?: Prisma.SortOrder
   invoiceFileUrl?: Prisma.SortOrder
+  hiddenAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -767,6 +807,7 @@ export type ItemMaxOrderByAggregateInput = {
   model?: Prisma.SortOrder
   serialNumber?: Prisma.SortOrder
   patrimonyCode?: Prisma.SortOrder
+  qrCode?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   location?: Prisma.SortOrder
   purchaseYear?: Prisma.SortOrder
@@ -782,6 +823,7 @@ export type ItemMaxOrderByAggregateInput = {
   notes?: Prisma.SortOrder
   invoiceFileName?: Prisma.SortOrder
   invoiceFileUrl?: Prisma.SortOrder
+  hiddenAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -795,6 +837,7 @@ export type ItemMinOrderByAggregateInput = {
   model?: Prisma.SortOrder
   serialNumber?: Prisma.SortOrder
   patrimonyCode?: Prisma.SortOrder
+  qrCode?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   location?: Prisma.SortOrder
   purchaseYear?: Prisma.SortOrder
@@ -810,6 +853,7 @@ export type ItemMinOrderByAggregateInput = {
   notes?: Prisma.SortOrder
   invoiceFileName?: Prisma.SortOrder
   invoiceFileUrl?: Prisma.SortOrder
+  hiddenAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -913,6 +957,7 @@ export type ItemCreateWithoutCategoryInput = {
   model?: string | null
   serialNumber?: string | null
   patrimonyCode?: string | null
+  qrCode?: string | null
   quantity?: number
   location?: string | null
   purchaseYear: number
@@ -928,6 +973,7 @@ export type ItemCreateWithoutCategoryInput = {
   notes?: string | null
   invoiceFileName?: string | null
   invoiceFileUrl?: string | null
+  hiddenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   images?: Prisma.ItemImageCreateNestedManyWithoutItemInput
@@ -941,6 +987,7 @@ export type ItemUncheckedCreateWithoutCategoryInput = {
   model?: string | null
   serialNumber?: string | null
   patrimonyCode?: string | null
+  qrCode?: string | null
   quantity?: number
   location?: string | null
   purchaseYear: number
@@ -956,6 +1003,7 @@ export type ItemUncheckedCreateWithoutCategoryInput = {
   notes?: string | null
   invoiceFileName?: string | null
   invoiceFileUrl?: string | null
+  hiddenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   images?: Prisma.ItemImageUncheckedCreateNestedManyWithoutItemInput
@@ -999,6 +1047,7 @@ export type ItemScalarWhereInput = {
   model?: Prisma.StringNullableFilter<"Item"> | string | null
   serialNumber?: Prisma.StringNullableFilter<"Item"> | string | null
   patrimonyCode?: Prisma.StringNullableFilter<"Item"> | string | null
+  qrCode?: Prisma.StringNullableFilter<"Item"> | string | null
   quantity?: Prisma.IntFilter<"Item"> | number
   location?: Prisma.StringNullableFilter<"Item"> | string | null
   purchaseYear?: Prisma.IntFilter<"Item"> | number
@@ -1014,6 +1063,7 @@ export type ItemScalarWhereInput = {
   notes?: Prisma.StringNullableFilter<"Item"> | string | null
   invoiceFileName?: Prisma.StringNullableFilter<"Item"> | string | null
   invoiceFileUrl?: Prisma.StringNullableFilter<"Item"> | string | null
+  hiddenAt?: Prisma.DateTimeNullableFilter<"Item"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Item"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Item"> | Date | string
 }
@@ -1026,6 +1076,7 @@ export type ItemCreateWithoutImagesInput = {
   model?: string | null
   serialNumber?: string | null
   patrimonyCode?: string | null
+  qrCode?: string | null
   quantity?: number
   location?: string | null
   purchaseYear: number
@@ -1041,6 +1092,7 @@ export type ItemCreateWithoutImagesInput = {
   notes?: string | null
   invoiceFileName?: string | null
   invoiceFileUrl?: string | null
+  hiddenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   category: Prisma.CategoryCreateNestedOneWithoutItemsInput
@@ -1055,6 +1107,7 @@ export type ItemUncheckedCreateWithoutImagesInput = {
   model?: string | null
   serialNumber?: string | null
   patrimonyCode?: string | null
+  qrCode?: string | null
   quantity?: number
   location?: string | null
   purchaseYear: number
@@ -1070,6 +1123,7 @@ export type ItemUncheckedCreateWithoutImagesInput = {
   notes?: string | null
   invoiceFileName?: string | null
   invoiceFileUrl?: string | null
+  hiddenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1098,6 +1152,7 @@ export type ItemUpdateWithoutImagesInput = {
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serialNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patrimonyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   purchaseYear?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1113,6 +1168,7 @@ export type ItemUpdateWithoutImagesInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceFileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hiddenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.CategoryUpdateOneRequiredWithoutItemsNestedInput
@@ -1127,6 +1183,7 @@ export type ItemUncheckedUpdateWithoutImagesInput = {
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serialNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patrimonyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   purchaseYear?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1142,6 +1199,7 @@ export type ItemUncheckedUpdateWithoutImagesInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceFileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hiddenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1154,6 +1212,7 @@ export type ItemCreateManyCategoryInput = {
   model?: string | null
   serialNumber?: string | null
   patrimonyCode?: string | null
+  qrCode?: string | null
   quantity?: number
   location?: string | null
   purchaseYear: number
@@ -1169,6 +1228,7 @@ export type ItemCreateManyCategoryInput = {
   notes?: string | null
   invoiceFileName?: string | null
   invoiceFileUrl?: string | null
+  hiddenAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1181,6 +1241,7 @@ export type ItemUpdateWithoutCategoryInput = {
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serialNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patrimonyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   purchaseYear?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1196,6 +1257,7 @@ export type ItemUpdateWithoutCategoryInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceFileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hiddenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   images?: Prisma.ItemImageUpdateManyWithoutItemNestedInput
@@ -1209,6 +1271,7 @@ export type ItemUncheckedUpdateWithoutCategoryInput = {
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serialNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patrimonyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   purchaseYear?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1224,6 +1287,7 @@ export type ItemUncheckedUpdateWithoutCategoryInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceFileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hiddenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   images?: Prisma.ItemImageUncheckedUpdateManyWithoutItemNestedInput
@@ -1237,6 +1301,7 @@ export type ItemUncheckedUpdateManyWithoutCategoryInput = {
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serialNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patrimonyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qrCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   purchaseYear?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1252,6 +1317,7 @@ export type ItemUncheckedUpdateManyWithoutCategoryInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceFileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceFileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hiddenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1296,6 +1362,7 @@ export type ItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   model?: boolean
   serialNumber?: boolean
   patrimonyCode?: boolean
+  qrCode?: boolean
   quantity?: boolean
   location?: boolean
   purchaseYear?: boolean
@@ -1311,6 +1378,7 @@ export type ItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   notes?: boolean
   invoiceFileName?: boolean
   invoiceFileUrl?: boolean
+  hiddenAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
@@ -1327,6 +1395,7 @@ export type ItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   model?: boolean
   serialNumber?: boolean
   patrimonyCode?: boolean
+  qrCode?: boolean
   quantity?: boolean
   location?: boolean
   purchaseYear?: boolean
@@ -1342,6 +1411,7 @@ export type ItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   notes?: boolean
   invoiceFileName?: boolean
   invoiceFileUrl?: boolean
+  hiddenAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
@@ -1356,6 +1426,7 @@ export type ItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   model?: boolean
   serialNumber?: boolean
   patrimonyCode?: boolean
+  qrCode?: boolean
   quantity?: boolean
   location?: boolean
   purchaseYear?: boolean
@@ -1371,6 +1442,7 @@ export type ItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   notes?: boolean
   invoiceFileName?: boolean
   invoiceFileUrl?: boolean
+  hiddenAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
@@ -1385,6 +1457,7 @@ export type ItemSelectScalar = {
   model?: boolean
   serialNumber?: boolean
   patrimonyCode?: boolean
+  qrCode?: boolean
   quantity?: boolean
   location?: boolean
   purchaseYear?: boolean
@@ -1400,11 +1473,12 @@ export type ItemSelectScalar = {
   notes?: boolean
   invoiceFileName?: boolean
   invoiceFileUrl?: boolean
+  hiddenAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "categoryId" | "brand" | "model" | "serialNumber" | "patrimonyCode" | "quantity" | "location" | "purchaseYear" | "purchaseDate" | "purchaseValue" | "supplier" | "condition" | "insuranceStatus" | "insuranceCompany" | "insurancePolicy" | "insuranceExpires" | "warrantyExpires" | "notes" | "invoiceFileName" | "invoiceFileUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["item"]>
+export type ItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "categoryId" | "brand" | "model" | "serialNumber" | "patrimonyCode" | "qrCode" | "quantity" | "location" | "purchaseYear" | "purchaseDate" | "purchaseValue" | "supplier" | "condition" | "insuranceStatus" | "insuranceCompany" | "insurancePolicy" | "insuranceExpires" | "warrantyExpires" | "notes" | "invoiceFileName" | "invoiceFileUrl" | "hiddenAt" | "createdAt" | "updatedAt", ExtArgs["result"]["item"]>
 export type ItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
   images?: boolean | Prisma.Item$imagesArgs<ExtArgs>
@@ -1436,6 +1510,10 @@ export type $ItemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
      */
     patrimonyCode: string | null
     /**
+     * Conteúdo ou identificador associado ao código QR do ativo.
+     */
+    qrCode: string | null
+    /**
      * Quantidade de unidades representadas por este registro (≥ 1).
      */
     quantity: number
@@ -1456,6 +1534,10 @@ export type $ItemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
      * Caminho local `/uploads/invoices/...` ou URL do Vercel Blob (privada ou pública). Leitura via `/api/items/[id]/invoice`.
      */
     invoiceFileUrl: string | null
+    /**
+     * Preenchido ao “excluir” no admin: item some da lista e do catálogo público; o registro permanece no banco.
+     */
+    hiddenAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["item"]>
@@ -1891,6 +1973,7 @@ export interface ItemFieldRefs {
   readonly model: Prisma.FieldRef<"Item", 'String'>
   readonly serialNumber: Prisma.FieldRef<"Item", 'String'>
   readonly patrimonyCode: Prisma.FieldRef<"Item", 'String'>
+  readonly qrCode: Prisma.FieldRef<"Item", 'String'>
   readonly quantity: Prisma.FieldRef<"Item", 'Int'>
   readonly location: Prisma.FieldRef<"Item", 'String'>
   readonly purchaseYear: Prisma.FieldRef<"Item", 'Int'>
@@ -1906,6 +1989,7 @@ export interface ItemFieldRefs {
   readonly notes: Prisma.FieldRef<"Item", 'String'>
   readonly invoiceFileName: Prisma.FieldRef<"Item", 'String'>
   readonly invoiceFileUrl: Prisma.FieldRef<"Item", 'String'>
+  readonly hiddenAt: Prisma.FieldRef<"Item", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Item", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Item", 'DateTime'>
 }

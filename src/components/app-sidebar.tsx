@@ -4,7 +4,18 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { startTransition, useEffect, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { Globe, LayoutGrid, LogOut, Menu, Tags, User, Users, X } from "lucide-react";
+import {
+  Globe,
+  LayoutGrid,
+  LogOut,
+  Menu,
+  Package,
+  ScrollText,
+  Tags,
+  User,
+  Users,
+  X,
+} from "lucide-react";
 import type { FirebasePublicConfig } from "@/lib/firebase/public-config";
 import { getFirebaseClientAuth } from "@/lib/firebase/client-app";
 
@@ -135,6 +146,13 @@ export function AppSidebar({ firebaseConfig }: Props) {
       </div>
 
       <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto p-3" aria-label="Principal">
+        <Link
+          href="/admin"
+          className={`group ${navLinkClass(pathname === "/admin")}`}
+        >
+          <Package size={18} className="shrink-0 text-current opacity-90" />
+          Itens
+        </Link>
         {showUsersNav ? (
           <>
             <Link
@@ -153,6 +171,15 @@ export function AppSidebar({ firebaseConfig }: Props) {
             >
               <Globe size={18} className="shrink-0 text-current opacity-90" />
               Catálogo público
+            </Link>
+            <Link
+              href="/admin/auditoria"
+              className={`group ${navLinkClass(
+                pathname === "/admin/auditoria" || pathname.startsWith("/admin/auditoria/"),
+              )}`}
+            >
+              <ScrollText size={18} className="shrink-0 text-current opacity-90" />
+              Auditoria
             </Link>
           </>
         ) : null}

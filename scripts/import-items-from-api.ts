@@ -5,17 +5,22 @@
  * - DATABASE_URL (obrigatório)
  * - BLOB_READ_WRITE_TOKEN — opcional; sem ele, imagens vão para `public/uploads/assets/`
  * - IMPORT_SOURCE_BASE_URL — default `http://localhost:8080`
- * - IMPORT_CATEGORY_NAME — default `Decoração` (tem de existir na tabela Category; rode `npm run db:seed` se precisar)
+ * - IMPORT_CATEGORY_NAMES — categorias a importar, separadas por vírgula (default: `Decoração,Móveis`).
+ *   Cada uma tem de existir na tabela Category (ex.: `npm run db:seed`).
+ * - IMPORT_CATEGORY_NAME — se definido sozinho (sem IMPORT_CATEGORY_NAMES), importa só esta categoria (compatibilidade).
  * - IMPORT_PURCHASE_YEAR — inteiro; sem valor, usa o ano de `createdAt` da API ou o ano civil atual
  * - IMPORT_CONCURRENCY — pedidos GET paralelos por item (default 3)
  * - IMPORT_SKIP_EXISTING — `1`/`true`: não cria item se já existir `patrimonyCode` igual (quando o código vem da API)
+ * - IMPORT_VERBOSE — `1`/`true`: regista a quantidade lida da API por item (útil para validar o mapeamento)
+ * - IMPORT_ONLY_IDS — lista de ids da API separados por vírgula; só importa estes (útil para testes).
+ *   Equivalente: `--only=id1,id2`
  *
  * Uso:
  *   npx tsx scripts/import-items-from-api.ts
  *   npx tsx scripts/import-items-from-api.ts --dry-run
+ *   npx tsx scripts/import-items-from-api.ts --only=3Vzz9py6sa06awUpaJ7Q
  */
 
-import { existsSync, readFileSync } from "fs";
 import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { randomUUID } from "crypto";
@@ -24,94 +29,69 @@ import { PrismaClient } from "@/generated/prisma/client";
 import { InsuranceStatus, ItemCondition } from "@/generated/prisma/client";
 import { createPrismaDriverAdapter } from "@/lib/prisma-driver-adapter";
 import { PRIVATE_ITEM_IMAGE_PREFIX } from "@/lib/item-image";
+import {
+  envStr,
+  envInt,
+  envBool,
+  str,
+  patrimonyFromApi,
+  quantityFromApi,
+  fetchJson,
+  mergeApiDetailPayload,
+} from "./lib/external-api-shared";
 
 const MAX_IMAGE_SIZE = 8 * 1024 * 1024;
 
-function loadEnvFromDotenvFile() {
-  const envPath = path.join(process.cwd(), ".env");
-  if (!existsSync(envPath)) {
-    return;
+/** Inteiro ≥ 1 para o campo Prisma `Item.quantity`. */
+function normalizeQuantity(qty: number): number {
+  const n = Math.floor(Number(qty));
+  if (!Number.isFinite(n) || n < 1) {
+    return 1;
   }
-  const text = readFileSync(envPath, "utf8");
-  for (const line of text.split("\n")) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#")) {
-      continue;
-    }
-    const eq = trimmed.indexOf("=");
-    if (eq === -1) {
-      continue;
-    }
-    const key = trimmed.slice(0, eq).trim();
-    let val = trimmed.slice(eq + 1).trim();
-    if (
-      (val.startsWith('"') && val.endsWith('"')) ||
-      (val.startsWith("'") && val.endsWith("'"))
-    ) {
-      val = val.slice(1, -1);
-    }
-    if (process.env[key] === undefined) {
-      process.env[key] = val;
-    }
+  return n;
+}
+
+/** Categorias a pedir à API e onde gravar no Asset Manager. */
+function resolveImportCategoryNames(): string[] {
+  const plural = process.env.IMPORT_CATEGORY_NAMES?.trim();
+  if (plural) {
+    return plural
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
   }
-}
-
-loadEnvFromDotenvFile();
-
-function envStr(key: string, fallback: string): string {
-  const v = process.env[key]?.trim();
-  return v && v.length > 0 ? v : fallback;
-}
-
-function envInt(key: string, fallback: number): number {
-  const raw = process.env[key]?.trim();
-  if (!raw) {
-    return fallback;
+  const single = process.env.IMPORT_CATEGORY_NAME?.trim();
+  if (single) {
+    return [single];
   }
-  const n = Number(raw);
-  return Number.isFinite(n) ? Math.floor(n) : fallback;
+  return ["Decoração", "Móveis"];
 }
 
-function envBool(key: string): boolean {
-  const v = process.env[key]?.trim().toLowerCase();
-  return v === "1" || v === "true" || v === "yes";
-}
+type ImportJob = {
+  externalId: string;
+  /** Categoria usada no pedido `?categoria=` quando o id veio da lista. */
+  listCategoryName?: string;
+};
 
-function str(v: unknown): string | null {
-  if (typeof v !== "string") {
-    return null;
+function parseOnlyIdsFromArgvAndEnv(): string[] | null {
+  const arg = process.argv.find((a) => a.startsWith("--only="));
+  if (arg) {
+    const list = arg
+      .slice("--only=".length)
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    return list.length ? list : null;
   }
-  const t = v.trim();
-  return t.length > 0 ? t : null;
-}
-
-function patrimonyFromApi(item: Record<string, unknown>): string | null {
-  const keys = [
-    "codigoPatrimonio",
-    "codigo_patrimonio",
-    "patrimonyCode",
-    "patrimonio",
-  ];
-  for (const k of keys) {
-    const s = str(item[k]);
-    if (s) {
-      return s;
-    }
+  const raw = process.env.IMPORT_ONLY_IDS?.trim();
+  if (raw) {
+    const list = raw
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    return list.length ? list : null;
   }
   return null;
-}
-
-function quantityFromApi(item: Record<string, unknown>): number {
-  const q = item.quantidade;
-  if (typeof q === "number" && Number.isFinite(q)) {
-    const n = Math.floor(q);
-    return n >= 1 ? n : 1;
-  }
-  if (typeof q === "string") {
-    const n = Math.floor(Number(q.replace(",", ".")));
-    return Number.isFinite(n) && n >= 1 ? n : 1;
-  }
-  return 1;
 }
 
 function purchaseYearFromApi(
@@ -219,21 +199,33 @@ async function dataUrlToImage(
   return saveImportedImage(parsed.buffer, parsed.mime, label);
 }
 
-async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, init);
-  if (!res.ok) {
-    const body = await res.text().catch(() => "");
-    throw new Error(`HTTP ${res.status} ${res.statusText} — ${url}${body ? `\n${body.slice(0, 500)}` : ""}`);
+function resolveItemCategoryId(
+  raw: Record<string, unknown>,
+  categoryIdByName: Map<string, string>,
+  listCategoryName: string | undefined,
+): string {
+  const apiCat = str(raw.categoria);
+  if (apiCat && categoryIdByName.has(apiCat)) {
+    return categoryIdByName.get(apiCat)!;
   }
-  return res.json() as Promise<T>;
+  if (listCategoryName && categoryIdByName.has(listCategoryName)) {
+    return categoryIdByName.get(listCategoryName)!;
+  }
+  if (categoryIdByName.size === 1) {
+    return [...categoryIdByName.values()][0]!;
+  }
+  throw new Error(
+    `Categoria não mapeada (API categoria=${apiCat ?? "∅"}, lista=${listCategoryName ?? "∅"}). Verifique IMPORT_CATEGORY_NAMES.`,
+  );
 }
 
 async function main() {
   const dryRun = process.argv.includes("--dry-run");
   const base = envStr("IMPORT_SOURCE_BASE_URL", "http://localhost:8080").replace(/\/$/, "");
-  const categoryName = envStr("IMPORT_CATEGORY_NAME", "Móveis");
+  const categoryNames = resolveImportCategoryNames();
   const concurrency = Math.max(1, Math.min(20, envInt("IMPORT_CONCURRENCY", 3)));
   const skipExisting = envBool("IMPORT_SKIP_EXISTING");
+  const verbose = envBool("IMPORT_VERBOSE");
 
   const purchaseYearEnv = process.env.IMPORT_PURCHASE_YEAR?.trim();
   const explicitPurchaseYear =
@@ -251,53 +243,88 @@ async function main() {
     adapter: createPrismaDriverAdapter(connectionString),
   });
 
-  const category = await prisma.category.findFirst({
-    where: { name: categoryName },
+  const categoriesInDb = await prisma.category.findMany({
+    where: { name: { in: categoryNames } },
+    select: { id: true, name: true },
   });
-  if (!category) {
-    console.error(
-      `Categoria "${categoryName}" não encontrada. Rode o seed (npm run db:seed) ou crie a categoria.`,
-    );
-    await prisma.$disconnect();
-    process.exit(1);
+  const categoryIdByName = new Map(categoriesInDb.map((c) => [c.name, c.id]));
+  for (const n of categoryNames) {
+    if (!categoryIdByName.has(n)) {
+      console.error(
+        `Categoria "${n}" não encontrada na base. Rode o seed (npm run db:seed) ou crie a categoria.`,
+      );
+      await prisma.$disconnect();
+      process.exit(1);
+    }
   }
-  const categoryId = category.id;
 
-  const listUrl = `${base}/api/items?idsOnly=true&categoria=${encodeURIComponent(categoryName)}`;
-  console.log(`Listando IDs: ${listUrl}`);
-  const listPayload = await fetchJson<{ ids?: string[] }>(listUrl, {
-    signal: AbortSignal.timeout(180_000),
-  });
-  const idsRaw = listPayload.ids;
-  if (!Array.isArray(idsRaw) || idsRaw.length === 0) {
-    console.log("Nenhum id retornado.");
-    await prisma.$disconnect();
-    return;
+  const onlyIds = parseOnlyIdsFromArgvAndEnv();
+  let jobs: ImportJob[];
+  if (onlyIds) {
+    jobs = onlyIds.map((externalId) => ({ externalId }));
+    console.log(`Modo --only / IMPORT_ONLY_IDS: ${jobs.length} id(s), sem pedido à lista da API.`);
+  } else {
+    const seen = new Set<string>();
+    jobs = [];
+    for (const catName of categoryNames) {
+      const listUrl = `${base}/api/items?idsOnly=true&categoria=${encodeURIComponent(catName)}`;
+      console.log(`Listando IDs: ${listUrl}`);
+      const listPayload = await fetchJson<{ ids?: string[] }>(listUrl, {
+        signal: AbortSignal.timeout(180_000),
+      });
+      const idsRaw = listPayload.ids;
+      if (!Array.isArray(idsRaw)) {
+        console.warn(`Resposta sem array ids para categoria "${catName}".`);
+        continue;
+      }
+      for (const id of idsRaw) {
+        if (seen.has(id)) {
+          continue;
+        }
+        seen.add(id);
+        jobs.push({ externalId: id, listCategoryName: catName });
+      }
+    }
+    if (jobs.length === 0) {
+      console.log("Nenhum id retornado.");
+      await prisma.$disconnect();
+      return;
+    }
   }
-  const ids: string[] = idsRaw;
 
-  console.log(`${ids.length} itens a processar (concorrência ${concurrency})${dryRun ? " [DRY-RUN]" : ""}.`);
+  console.log(
+    `Categorias: ${categoryNames.join(", ")} — ${jobs.length} itens a processar (concorrência ${concurrency})${dryRun ? " [DRY-RUN]" : ""}.`,
+  );
 
   let created = 0;
   let skipped = 0;
   let failed = 0;
 
-  async function processId(externalId: string, index: number) {
-    const label = `[${index + 1}/${ids.length}] ${externalId}`;
+  async function processJob(job: ImportJob, index: number) {
+    const { externalId, listCategoryName } = job;
+    const label = `[${index + 1}/${jobs.length}] ${externalId}`;
     try {
       const detailUrl = `${base}/api/items/${encodeURIComponent(externalId)}`;
-      const detail = await fetchJson<{ item?: Record<string, unknown> }>(detailUrl, {
+      const detail = await fetchJson<Record<string, unknown>>(detailUrl, {
         signal: AbortSignal.timeout(120_000),
       });
-      const raw = detail.item;
-      if (!raw || typeof raw !== "object") {
-        throw new Error("Resposta sem objeto item");
-      }
+      const raw = mergeApiDetailPayload(detail);
 
       const name = str(raw.nome);
       if (!name) {
         throw new Error("Campo nome vazio");
       }
+
+      const qtyParsed = quantityFromApi(raw);
+      const qty = normalizeQuantity(qtyParsed);
+      if (verbose) {
+        const rawQ = raw.quantidade ?? raw.quantity ?? raw.qtde ?? raw.qtd;
+        console.log(
+          `${label} quantidade API=${rawQ === undefined ? "∅" : JSON.stringify(rawQ)} → ${qty}`,
+        );
+      }
+
+      const itemCategoryId = resolveItemCategoryId(raw, categoryIdByName, listCategoryName);
 
       const patrimonyCode = patrimonyFromApi(raw);
       if (!dryRun && skipExisting && patrimonyCode) {
@@ -328,12 +355,12 @@ async function main() {
       const data = {
         name,
         description: null as string | null,
-        categoryId,
+        categoryId: itemCategoryId,
         brand: str(raw.marca),
         model: str(raw.modelo),
         serialNumber: null as string | null,
         patrimonyCode,
-        quantity: quantityFromApi(raw),
+        quantity: qty,
         location: null as string | null,
         purchaseYear: purchaseYearFromApi(raw, explicitPurchaseYear),
         purchaseDate: null as Date | null,
@@ -361,13 +388,27 @@ async function main() {
       };
 
       if (dryRun) {
-        console.log(`${label} OK (dry-run) — ${name}${patrimonyCode ? ` — patrimônio ${patrimonyCode}` : ""}`);
+        console.log(
+          `${label} OK (dry-run) — ${name} — cat=${str(raw.categoria) ?? listCategoryName ?? "?"} — qtd=${qty}${patrimonyCode ? ` — patrimônio ${patrimonyCode}` : ""}`,
+        );
         created += 1;
         return;
       }
 
-      await prisma.item.create({ data });
-      console.log(`${label} criado — ${name}`);
+      const inserted = await prisma.item.create({
+        data,
+        select: { id: true, quantity: true },
+      });
+      if (inserted.quantity !== qty) {
+        await prisma.item.update({
+          where: { id: inserted.id },
+          data: { quantity: qty },
+        });
+        console.warn(
+          `${label} quantidade no INSERT era ${inserted.quantity}; atualizada para ${qty}.`,
+        );
+      }
+      console.log(`${label} criado — ${name} — qtd=${qty}`);
       created += 1;
     } catch (e) {
       failed += 1;
@@ -381,14 +422,14 @@ async function main() {
     while (true) {
       const i = cursor;
       cursor += 1;
-      if (i >= ids.length) {
+      if (i >= jobs.length) {
         return;
       }
-      await processId(ids[i]!, i);
+      await processJob(jobs[i]!, i);
     }
   }
 
-  const workers = Array.from({ length: Math.min(concurrency, ids.length) }, () => worker());
+  const workers = Array.from({ length: Math.min(concurrency, jobs.length) }, () => worker());
   await Promise.all(workers);
 
   console.log(`Concluído. criados=${created} ignorados=${skipped} falhas=${failed}`);

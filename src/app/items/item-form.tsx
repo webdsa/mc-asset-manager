@@ -30,6 +30,7 @@ export type ItemFormInitial = {
   model: string | null;
   serialNumber: string | null;
   patrimonyCode: string | null;
+  qrCode: string | null;
   quantity: number;
   location: string | null;
   purchaseYear: number;
@@ -48,6 +49,10 @@ export type ItemFormInitial = {
 };
 
 const ITEM_FORM_ID = "item-form";
+
+/** Mesma largura e margens horizontais do formulário (ex.: auditoria abaixo do form na edição). */
+export const itemFormContainerClassName =
+  "mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8";
 
 function initialPurchaseForEstimate(
   purchaseValue: ItemFormInitial["purchaseValue"],
@@ -129,7 +134,7 @@ export function ItemForm({
       <form
         id={ITEM_FORM_ID}
         action={action}
-        className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8"
+        className={`${itemFormContainerClassName} py-6`}
       >
         {isEdit && initial ? <input type="hidden" name="itemId" value={initial.id} /> : null}
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
@@ -196,6 +201,15 @@ export function ItemForm({
                     className={inputClass}
                     placeholder="Opcional"
                     defaultValue={initial?.patrimonyCode ?? ""}
+                    autoComplete="off"
+                  />
+                </Field>
+                <Field label="Código QR">
+                  <input
+                    name="qrCode"
+                    className={inputClass}
+                    placeholder="Texto, URL ou identificador do QR"
+                    defaultValue={initial?.qrCode ?? ""}
                     autoComplete="off"
                   />
                 </Field>

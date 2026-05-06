@@ -53,3 +53,14 @@ export const UserAccessStatus = {
 } as const
 
 export type UserAccessStatus = (typeof UserAccessStatus)[keyof typeof UserAccessStatus]
+
+
+export const ItemAuditAction = {
+  CREATE: 'CREATE',
+  UPDATE: 'UPDATE',
+  SOFT_DELETE: 'SOFT_DELETE',
+  PERMANENT_DELETE: 'PERMANENT_DELETE',
+  IMAGE_REMOVE: 'IMAGE_REMOVE'
+} as const
+
+export type ItemAuditAction = (typeof ItemAuditAction)[keyof typeof ItemAuditAction]

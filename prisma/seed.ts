@@ -17,6 +17,7 @@ const categories = [
   { name: "Cenografia", color: "#ef4444" },
   { name: "Decoração", color: "#8b5cf6" },
   { name: "Mobiliário", color: "#64748b" },
+  { name: "Móveis", color: "#78716c" },
   { name: "Produção", color: "#14b8a6" },
 ];
 

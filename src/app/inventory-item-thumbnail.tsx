@@ -5,7 +5,6 @@ import Image from "next/image";
 import { ImageIcon } from "lucide-react";
 import {
   itemImageDisplaySrc,
-  itemImageDownloadHref,
   itemImageNeedsUnoptimizedNextImage,
 } from "@/lib/item-image";
 import { ItemImageLightbox } from "@/app/items/item-image-lightbox";
@@ -15,21 +14,25 @@ type ThumbImage = { id: string; url: string; alt: string | null; fileName: strin
 export function InventoryItemThumbnail({
   itemId,
   itemName,
-  image,
-  imageCount,
+  images,
   className,
+  layout = "compact",
 }: {
   itemId: string;
   itemName: string;
-  image: ThumbImage | undefined;
-  /** Total de fotos do item; badge só aparece com mais de uma foto */
-  imageCount?: number;
+  images: ThumbImage[];
   className?: string;
+  /** `cover`: largura total, proporção fixa (cards em grade no inventário). */
+  layout?: "compact" | "cover";
 }) {
   const [open, setOpen] = useState(false);
+  const image = images[0];
+  const imageCount = images.length;
 
   const boxClass = [
-    "relative flex h-20 w-24 shrink-0 items-center justify-center overflow-hidden rounded-md bg-slate-100",
+    layout === "cover"
+      ? "relative flex aspect-[4/3] w-full shrink-0 items-center justify-center overflow-hidden rounded-lg bg-slate-100"
+      : "relative flex h-20 w-24 shrink-0 items-center justify-center overflow-hidden rounded-md bg-slate-100",
     className,
   ]
     .filter(Boolean)
@@ -52,7 +55,11 @@ export function InventoryItemThumbnail({
           src={viewSrc}
           alt={image.alt ?? itemName}
           fill
-          sizes="(max-width: 1023px) 108px, 96px"
+          sizes={
+            layout === "cover"
+              ? "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              : "(max-width: 1023px) 108px, 96px"
+          }
           unoptimized={itemImageNeedsUnoptimizedNextImage(viewSrc)}
           className="object-cover"
         />
@@ -64,22 +71,26 @@ export function InventoryItemThumbnail({
         />
         {imageCount !== undefined && imageCount > 1 ? (
           <span
-            className="pointer-events-none absolute right-1.5 top-1.5 z-[2] inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-petroleum-950/85 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-white shadow-sm ring-1 ring-white/15 backdrop-blur-[2px]"
-            aria-hidden
+            className={
+              layout === "cover"
+                ? "pointer-events-none absolute right-2 top-2 z-[2] inline-flex min-h-[1.5rem] min-w-[1.5rem] items-center justify-center rounded-full bg-petroleum-950/90 px-2 py-0.5 text-xs font-semibold tabular-nums text-white shadow-md ring-1 ring-white/20 backdrop-blur-[2px]"
+                : "pointer-events-none absolute right-1.5 top-1.5 z-[2] inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-petroleum-950/85 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-white shadow-sm ring-1 ring-white/15 backdrop-blur-[2px]"
+            }
+            aria-label={`${imageCount} imagens`}
           >
             {imageCount}
           </span>
         ) : null}
       </div>
 
-      {open ? (
+      {open && images.length > 0 ? (
         <ItemImageLightbox
           open
           onClose={() => setOpen(false)}
-          viewSrc={viewSrc}
-          alt={image.alt ?? itemName}
-          downloadHref={itemImageDownloadHref(itemId, image)}
-          downloadFileName={image.fileName}
+          itemId={itemId}
+          itemName={itemName}
+          images={images}
+          initialIndex={0}
         />
       ) : null}
     </>

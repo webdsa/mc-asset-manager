@@ -55,6 +55,7 @@ export const ModelName = {
   User: 'User',
   UserCategoryAccess: 'UserCategoryAccess',
   Item: 'Item',
+  ItemAuditLog: 'ItemAuditLog',
   ItemImage: 'ItemImage'
 } as const
 
@@ -121,6 +122,7 @@ export const ItemScalarFieldEnum = {
   model: 'model',
   serialNumber: 'serialNumber',
   patrimonyCode: 'patrimonyCode',
+  qrCode: 'qrCode',
   quantity: 'quantity',
   location: 'location',
   purchaseYear: 'purchaseYear',
@@ -136,11 +138,27 @@ export const ItemScalarFieldEnum = {
   notes: 'notes',
   invoiceFileName: 'invoiceFileName',
   invoiceFileUrl: 'invoiceFileUrl',
+  hiddenAt: 'hiddenAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type ItemScalarFieldEnum = (typeof ItemScalarFieldEnum)[keyof typeof ItemScalarFieldEnum]
+
+
+export const ItemAuditLogScalarFieldEnum = {
+  id: 'id',
+  itemId: 'itemId',
+  itemNameSnapshot: 'itemNameSnapshot',
+  actorUserId: 'actorUserId',
+  actorEmail: 'actorEmail',
+  actorDisplayName: 'actorDisplayName',
+  action: 'action',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+} as const
+
+export type ItemAuditLogScalarFieldEnum = (typeof ItemAuditLogScalarFieldEnum)[keyof typeof ItemAuditLogScalarFieldEnum]
 
 
 export const ItemImageScalarFieldEnum = {
@@ -163,6 +181,14 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -177,4 +203,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

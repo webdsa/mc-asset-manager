@@ -6,7 +6,16 @@ import path from "path";
 import { del, put } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { InsuranceStatus, ItemCondition } from "@/generated/prisma/client";
+import {
+  InsuranceStatus,
+  ItemAuditAction,
+  ItemCondition,
+  UserAccessStatus,
+  type User,
+} from "@/generated/prisma/client";
+import { actorSnapshotFromUser, recordItemAuditLog } from "@/lib/item-audit-log";
+import { isAppOwnerUser } from "@/lib/app-owner";
+import { getAppUser } from "@/lib/auth-user";
 import { parseBrlCurrencyToNumber } from "@/lib/format";
 import { PRIVATE_ITEM_IMAGE_PREFIX } from "@/lib/item-image";
 import { prisma } from "@/lib/prisma";
@@ -271,6 +280,11 @@ async function saveInvoice(file: File, maxSize: number): Promise<InvoiceSaveResu
 }
 
 export async function createItem(formData: FormData) {
+  const user = await getAppUser();
+  if (!user || user.accessStatus !== UserAccessStatus.APPROVED) {
+    throw new Error("Não autorizado.");
+  }
+
   const name = text(formData, "name");
   const categoryId = text(formData, "categoryId");
   const purchaseYear = numberValue(formData, "purchaseYear");
@@ -310,15 +324,16 @@ export async function createItem(formData: FormData) {
     }
   }
 
-  await prisma.item.create({
+  const item = await prisma.item.create({
     data: {
       name,
       description: text(formData, "description"),
-      categoryId,
+      category: { connect: { id: categoryId } },
       brand: text(formData, "brand"),
       model: text(formData, "model"),
       serialNumber: text(formData, "serialNumber"),
       patrimonyCode: text(formData, "patrimonyCode"),
+      qrCode: text(formData, "qrCode"),
       quantity,
       location: text(formData, "location"),
       purchaseYear,
@@ -343,12 +358,26 @@ export async function createItem(formData: FormData) {
     },
   });
 
+  await recordItemAuditLog({
+    itemId: item.id,
+    itemName: item.name,
+    action: ItemAuditAction.CREATE,
+    actor: actorSnapshotFromUser(user),
+    metadata:
+      imageUploads.length > 0 ? { initialImageCount: imageUploads.length } : undefined,
+  });
+
   revalidatePath("/");
   revalidatePath("/admin");
   redirect("/admin");
 }
 
 export async function updateItem(formData: FormData) {
+  const user = await getAppUser();
+  if (!user || user.accessStatus !== UserAccessStatus.APPROVED) {
+    throw new Error("Não autorizado.");
+  }
+
   const itemId = text(formData, "itemId");
   if (!itemId) {
     throw new Error("Item inválido.");
@@ -411,11 +440,12 @@ export async function updateItem(formData: FormData) {
     data: {
       name,
       description: text(formData, "description"),
-      categoryId,
+      category: { connect: { id: categoryId } },
       brand: text(formData, "brand"),
       model: text(formData, "model"),
       serialNumber: text(formData, "serialNumber"),
       patrimonyCode: text(formData, "patrimonyCode"),
+      qrCode: text(formData, "qrCode"),
       quantity,
       location: text(formData, "location"),
       purchaseYear,
@@ -444,6 +474,21 @@ export async function updateItem(formData: FormData) {
     },
   });
 
+  const updateMeta: Record<string, number | boolean> = {};
+  if (imageUploads.length > 0) {
+    updateMeta.addedImages = imageUploads.length;
+  }
+  if (invoice instanceof File && invoice.size) {
+    updateMeta.invoiceReplaced = true;
+  }
+  await recordItemAuditLog({
+    itemId,
+    itemName: name,
+    action: ItemAuditAction.UPDATE,
+    actor: actorSnapshotFromUser(user),
+    metadata: Object.keys(updateMeta).length > 0 ? updateMeta : undefined,
+  });
+
   if (
     invoice instanceof File &&
     invoice.size &&
@@ -461,10 +506,23 @@ export async function updateItem(formData: FormData) {
 }
 
 export async function deleteItemImage(formData: FormData) {
+  const user = await getAppUser();
+  if (!user || user.accessStatus !== UserAccessStatus.APPROVED) {
+    throw new Error("Não autorizado.");
+  }
+
   const itemId = text(formData, "itemId");
   const imageId = text(formData, "imageId");
   if (!itemId || !imageId) {
     throw new Error("Dados inválidos.");
+  }
+
+  const item = await prisma.item.findUnique({
+    where: { id: itemId },
+    select: { name: true },
+  });
+  if (!item) {
+    throw new Error("Item não encontrado.");
   }
 
   const image = await prisma.itemImage.findFirst({
@@ -478,10 +536,46 @@ export async function deleteItemImage(formData: FormData) {
   await removeStoredItemImage(image.url);
   await prisma.itemImage.delete({ where: { id: imageId } });
 
+  await recordItemAuditLog({
+    itemId,
+    itemName: item.name,
+    action: ItemAuditAction.IMAGE_REMOVE,
+    actor: actorSnapshotFromUser(user),
+  });
+
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath(`/items/${itemId}/edit`);
   redirect(`/items/${itemId}/edit`);
+}
+
+async function permanentlyDeleteItemById(itemId: string, actor: User) {
+  const item = await prisma.item.findUnique({
+    where: { id: itemId },
+    select: {
+      name: true,
+      invoiceFileUrl: true,
+      images: { select: { url: true } },
+    },
+  });
+  if (!item) {
+    throw new Error("Item não encontrado.");
+  }
+
+  for (const { url } of item.images) {
+    await removeStoredItemImage(url);
+  }
+  await deleteStoredInvoiceBlob(item.invoiceFileUrl);
+  await removeLocalInvoiceFile(item.invoiceFileUrl);
+
+  await recordItemAuditLog({
+    itemId,
+    itemName: item.name,
+    action: ItemAuditAction.PERMANENT_DELETE,
+    actor: actorSnapshotFromUser(actor),
+  });
+
+  await prisma.item.delete({ where: { id: itemId } });
 }
 
 export async function deleteItem(formData: FormData) {
@@ -490,28 +584,89 @@ export async function deleteItem(formData: FormData) {
     throw new Error("Item inválido.");
   }
 
-  const toRemove = await prisma.item.findUnique({
-    where: { id: itemId },
-    select: {
-      invoiceFileUrl: true,
-      images: { select: { url: true } },
-    },
-  });
-
-  if (toRemove?.images?.length) {
-    for (const img of toRemove.images) {
-      await removeStoredItemImage(img.url);
-    }
+  const user = await getAppUser();
+  if (!user || user.accessStatus !== UserAccessStatus.APPROVED) {
+    throw new Error("Não autorizado.");
   }
 
-  const invoiceUrl = toRemove?.invoiceFileUrl;
-  await prisma.item.delete({ where: { id: itemId } });
-  await deleteStoredInvoiceBlob(invoiceUrl);
-  await removeLocalInvoiceFile(invoiceUrl);
+  const existing = await prisma.item.findUnique({
+    where: { id: itemId },
+    select: { id: true, hiddenAt: true, name: true },
+  });
+  if (!existing) {
+    throw new Error("Item não encontrado.");
+  }
+
+  if (existing.hiddenAt) {
+    if (!isAppOwnerUser(user)) {
+      redirect("/admin");
+    }
+    await permanentlyDeleteItemById(itemId, user);
+    revalidatePath("/");
+    revalidatePath("/admin");
+    revalidatePath(`/items/${itemId}/edit`);
+    redirect("/admin");
+  }
+
+  await recordItemAuditLog({
+    itemId,
+    itemName: existing.name,
+    action: ItemAuditAction.SOFT_DELETE,
+    actor: actorSnapshotFromUser(user),
+  });
+
+  await prisma.item.update({
+    where: { id: itemId },
+    data: { hiddenAt: new Date() },
+  });
 
   revalidatePath("/");
   revalidatePath("/admin");
   redirect("/admin");
+}
+
+export async function restoreItem(formData: FormData) {
+  const itemId = text(formData, "itemId");
+  if (!itemId) {
+    throw new Error("Item inválido.");
+  }
+
+  const user = await getAppUser();
+  if (!user || user.accessStatus !== UserAccessStatus.APPROVED) {
+    throw new Error("Não autorizado.");
+  }
+  if (!isAppOwnerUser(user)) {
+    redirect("/admin");
+  }
+
+  const existing = await prisma.item.findUnique({
+    where: { id: itemId },
+    select: { id: true, hiddenAt: true, name: true },
+  });
+  if (!existing) {
+    throw new Error("Item não encontrado.");
+  }
+  if (!existing.hiddenAt) {
+    redirect("/admin");
+  }
+
+  await recordItemAuditLog({
+    itemId,
+    itemName: existing.name,
+    action: ItemAuditAction.UPDATE,
+    actor: actorSnapshotFromUser(user),
+    metadata: { reactivatedFromExcluded: true },
+  });
+
+  await prisma.item.update({
+    where: { id: itemId },
+    data: { hiddenAt: null },
+  });
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath(`/items/${itemId}/edit`);
+  redirect("/admin?incluir_ocultos=1");
 }
 
 function normalizeHexColor(raw: string): string | null {

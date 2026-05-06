@@ -40,6 +40,14 @@ enum UserAccessStatus {
   REVOKED
 }
 
+enum ItemAuditAction {
+  CREATE
+  UPDATE
+  SOFT_DELETE
+  PERMANENT_DELETE
+  IMAGE_REMOVE
+}
+
 model Category {
   id           String               @id @default(cuid())
   name         String               @unique
@@ -92,6 +100,8 @@ model Item {
   serialNumber     String?         @unique
   /// Código de patrimônio (contabilidade / inventário físico).
   patrimonyCode    String?         @unique
+  /// Conteúdo ou identificador associado ao código QR do ativo.
+  qrCode           String?
   /// Quantidade de unidades representadas por este registro (≥ 1).
   quantity         Int             @default(1)
   location         String?
@@ -110,13 +120,33 @@ model Item {
   /// Caminho local `/uploads/invoices/...` ou URL do Vercel Blob (privada ou pública). Leitura via `/api/items/[id]/invoice`.
   invoiceFileUrl   String?
   images           ItemImage[]
+  /// Preenchido ao “excluir” no admin: item some da lista e do catálogo público; o registro permanece no banco.
+  hiddenAt         DateTime?
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
 
   @@index([categoryId])
+  @@index([hiddenAt])
   @@index([insuranceStatus])
   @@index([condition])
   @@index([purchaseYear])
+}
+
+/// Histórico de alterações em ativos (data UTC no banco; exibir em America/Sao_Paulo na UI).
+model ItemAuditLog {
+  id                 String          @id @default(cuid())
+  itemId             String
+  itemNameSnapshot   String?
+  actorUserId        String?
+  actorEmail         String?
+  actorDisplayName   String?
+  action             ItemAuditAction
+  metadata           Json?
+  createdAt          DateTime        @default(now())
+
+  @@index([itemId])
+  @@index([createdAt])
+  @@index([actorUserId])
 }
 
 model ItemImage {

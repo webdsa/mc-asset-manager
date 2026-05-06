@@ -47,7 +47,7 @@ export function CategoryPublicToggle({
         />
       </span>
       <span className="text-sm text-slate-600">
-        {pending ? "A guardar…" : isPublic ? "Visível no catálogo público" : "Oculto do público"}
+        {pending ? "A guardar…" : isPublic ? "Visível no catálogo público" : "Excluído do público"}
       </span>
     </label>
   );

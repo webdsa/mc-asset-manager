@@ -4,7 +4,6 @@ import { useState } from "react";
 import Image from "next/image";
 import {
   itemImageDisplaySrc,
-  itemImageDownloadHref,
   itemImageNeedsUnoptimizedNextImage,
 } from "@/lib/item-image";
 import { ItemImageRemoveButton } from "@/app/items/item-image-remove-button";
@@ -65,10 +64,10 @@ export function EditItemImagesPanel({
         <ItemImageLightbox
           open
           onClose={() => setOpenFor(null)}
-          viewSrc={itemImageDisplaySrc(itemId, openFor)}
-          alt={openFor.alt ?? itemName}
-          downloadHref={itemImageDownloadHref(itemId, openFor)}
-          downloadFileName={openFor.fileName}
+          itemId={itemId}
+          itemName={itemName}
+          images={images}
+          initialIndex={Math.max(0, images.findIndex((img) => img.id === openFor.id))}
         />
       ) : null}
     </>

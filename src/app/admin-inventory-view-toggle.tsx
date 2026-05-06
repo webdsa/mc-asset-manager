@@ -4,7 +4,7 @@ import { LayoutGrid, LayoutList } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 
-export function PublicCatalogViewToggle() {
+export function AdminInventoryViewToggle() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isGrid = searchParams.get("vista") !== "list";
@@ -18,7 +18,7 @@ export function PublicCatalogViewToggle() {
         next.set("vista", "list");
       }
       const qs = next.toString();
-      router.push(qs ? `/?${qs}` : "/");
+      router.push(qs ? `/admin?${qs}` : "/admin");
     },
     [router, searchParams],
   );
@@ -33,13 +33,13 @@ export function PublicCatalogViewToggle() {
 
   return (
     <div className="w-full md:w-auto">
-      <span className="block text-sm font-medium text-slate-700" id="catalogo-vista-label">
+      <span className="block text-sm font-medium text-slate-700" id="admin-vista-label">
         Ver como
       </span>
       <div
         className="mt-1 inline-flex h-11 w-full items-stretch rounded-lg border border-slate-200 bg-white p-0.5 shadow-sm md:w-auto"
         role="group"
-        aria-labelledby="catalogo-vista-label"
+        aria-labelledby="admin-vista-label"
       >
         <button
           type="button"

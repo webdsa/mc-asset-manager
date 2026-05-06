@@ -388,6 +388,7 @@ export const ModelName = {
   User: 'User',
   UserCategoryAccess: 'UserCategoryAccess',
   Item: 'Item',
+  ItemAuditLog: 'ItemAuditLog',
   ItemImage: 'ItemImage'
 } as const
 
@@ -404,7 +405,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "category" | "user" | "userCategoryAccess" | "item" | "itemImage"
+    modelProps: "category" | "user" | "userCategoryAccess" | "item" | "itemAuditLog" | "itemImage"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -704,6 +705,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ItemAuditLog: {
+      payload: Prisma.$ItemAuditLogPayload<ExtArgs>
+      fields: Prisma.ItemAuditLogFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ItemAuditLogFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ItemAuditLogPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ItemAuditLogFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ItemAuditLogPayload>
+        }
+        findFirst: {
+          args: Prisma.ItemAuditLogFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ItemAuditLogPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ItemAuditLogFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ItemAuditLogPayload>
+        }
+        findMany: {
+          args: Prisma.ItemAuditLogFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ItemAuditLogPayload>[]
+        }
+        create: {
+          args: Prisma.ItemAuditLogCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ItemAuditLogPayload>
+        }
+        createMany: {
+          args: Prisma.ItemAuditLogCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ItemAuditLogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ItemAuditLogPayload>[]
+        }
+        delete: {
+          args: Prisma.ItemAuditLogDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ItemAuditLogPayload>
+        }
+        update: {
+          args: Prisma.ItemAuditLogUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ItemAuditLogPayload>
+        }
+        deleteMany: {
+          args: Prisma.ItemAuditLogDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ItemAuditLogUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ItemAuditLogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ItemAuditLogPayload>[]
+        }
+        upsert: {
+          args: Prisma.ItemAuditLogUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ItemAuditLogPayload>
+        }
+        aggregate: {
+          args: Prisma.ItemAuditLogAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateItemAuditLog>
+        }
+        groupBy: {
+          args: Prisma.ItemAuditLogGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ItemAuditLogGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ItemAuditLogCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ItemAuditLogCountAggregateOutputType> | number
+        }
+      }
+    }
     ItemImage: {
       payload: Prisma.$ItemImagePayload<ExtArgs>
       fields: Prisma.ItemImageFieldRefs
@@ -864,6 +939,7 @@ export const ItemScalarFieldEnum = {
   model: 'model',
   serialNumber: 'serialNumber',
   patrimonyCode: 'patrimonyCode',
+  qrCode: 'qrCode',
   quantity: 'quantity',
   location: 'location',
   purchaseYear: 'purchaseYear',
@@ -879,11 +955,27 @@ export const ItemScalarFieldEnum = {
   notes: 'notes',
   invoiceFileName: 'invoiceFileName',
   invoiceFileUrl: 'invoiceFileUrl',
+  hiddenAt: 'hiddenAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type ItemScalarFieldEnum = (typeof ItemScalarFieldEnum)[keyof typeof ItemScalarFieldEnum]
+
+
+export const ItemAuditLogScalarFieldEnum = {
+  id: 'id',
+  itemId: 'itemId',
+  itemNameSnapshot: 'itemNameSnapshot',
+  actorUserId: 'actorUserId',
+  actorEmail: 'actorEmail',
+  actorDisplayName: 'actorDisplayName',
+  action: 'action',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+} as const
+
+export type ItemAuditLogScalarFieldEnum = (typeof ItemAuditLogScalarFieldEnum)[keyof typeof ItemAuditLogScalarFieldEnum]
 
 
 export const ItemImageScalarFieldEnum = {
@@ -906,6 +998,14 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -920,6 +1020,15 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -1062,6 +1171,34 @@ export type ListEnumInsuranceStatusFieldRefInput<$PrismaModel> = FieldRefInputTy
 
 
 /**
+ * Reference to a field of type 'ItemAuditAction'
+ */
+export type EnumItemAuditActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ItemAuditAction'>
+    
+
+
+/**
+ * Reference to a field of type 'ItemAuditAction[]'
+ */
+export type ListEnumItemAuditActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ItemAuditAction[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -1188,6 +1325,7 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   userCategoryAccess?: Prisma.UserCategoryAccessOmit
   item?: Prisma.ItemOmit
+  itemAuditLog?: Prisma.ItemAuditLogOmit
   itemImage?: Prisma.ItemImageOmit
 }
 

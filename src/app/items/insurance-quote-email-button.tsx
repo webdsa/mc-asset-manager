@@ -53,6 +53,7 @@ export function InsuranceQuoteEmailButton({
       model: textField(form, "model"),
       serialNumber: textField(form, "serialNumber"),
       patrimonyCode: textField(form, "patrimonyCode"),
+      qrCode: textField(form, "qrCode"),
       purchaseYear: textField(form, "purchaseYear"),
       purchaseDate: textField(form, "purchaseDate"),
       purchaseValueRaw: textField(form, "purchaseValue"),

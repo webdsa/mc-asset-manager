@@ -38,6 +38,11 @@ export type UserCategoryAccess = Prisma.UserCategoryAccessModel
  */
 export type Item = Prisma.ItemModel
 /**
+ * Model ItemAuditLog
+ * Histórico de alterações em ativos (data UTC no banco; exibir em America/Sao_Paulo na UI).
+ */
+export type ItemAuditLog = Prisma.ItemAuditLogModel
+/**
  * Model ItemImage
  * 
  */

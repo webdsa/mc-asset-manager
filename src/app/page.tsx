@@ -10,8 +10,7 @@ import { PublicCatalogFilter } from "@/app/public-catalog-filter";
 import { PublicCatalogItemImage } from "@/app/public-catalog-item-image";
 import { PublicCatalogPagination } from "@/app/public-catalog-pagination";
 import { PublicCatalogViewToggle } from "@/app/public-catalog-view-toggle";
-
-const PUBLIC_CATALOG_PAGE_SIZE = 24;
+import { parsePublicCatalogPageSizeParam } from "@/lib/public-catalog-page-size";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -27,6 +26,7 @@ type PageProps = {
     q?: string | string[];
     vista?: string | string[];
     pagina?: string | string[];
+    por_pagina?: string | string[];
   }>;
 };
 
@@ -55,7 +55,8 @@ export default async function PublicCatalogHomePage({ searchParams }: PageProps)
   const params = await searchParams;
   const categoryFilter = pickSearchParam(params.categoria);
   const textQuery = pickSearchParam(params.q);
-  const isGrid = pickSearchParam(params.vista) === "grid";
+  const isGrid = pickSearchParam(params.vista) !== "list";
+  const pageSize = parsePublicCatalogPageSizeParam(pickSearchParam(params.por_pagina));
 
   const publicCategories = await prisma.category.findMany({
     where: { isPublic: true },
@@ -72,6 +73,7 @@ export default async function PublicCatalogHomePage({ searchParams }: PageProps)
     : [];
 
   const itemWhere: Prisma.ItemWhereInput = {
+    hiddenAt: null,
     categoryId: filterOk ? filterOk : { in: categoryIds },
     ...(textQuery
       ? {
@@ -91,7 +93,7 @@ export default async function PublicCatalogHomePage({ searchParams }: PageProps)
   const totalCount =
     publicCategories.length === 0 ? 0 : await prisma.item.count({ where: itemWhere });
 
-  const totalPages = Math.max(1, Math.ceil(totalCount / PUBLIC_CATALOG_PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const requestedPage = parsePagina(params.pagina);
   const page = Math.min(requestedPage, totalPages);
 
@@ -104,9 +106,9 @@ export default async function PublicCatalogHomePage({ searchParams }: PageProps)
             category: true,
             images: { orderBy: { createdAt: "asc" } },
           },
-          orderBy: [{ category: { name: "asc" } }, { name: "asc" }],
-          skip: (page - 1) * PUBLIC_CATALOG_PAGE_SIZE,
-          take: PUBLIC_CATALOG_PAGE_SIZE,
+          orderBy: { name: "asc" },
+          skip: (page - 1) * pageSize,
+          take: pageSize,
         });
 
   return (
@@ -302,11 +304,12 @@ export default async function PublicCatalogHomePage({ searchParams }: PageProps)
           page={page}
           totalPages={totalPages}
           totalCount={totalCount}
-          pageSize={PUBLIC_CATALOG_PAGE_SIZE}
+          pageSize={pageSize}
           query={{
             categoria: filterOk,
             q: textQuery,
-            vista: isGrid ? "grid" : undefined,
+            vista: isGrid ? undefined : "list",
+            pageSize,
           }}
         />
 
