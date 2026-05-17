@@ -12,9 +12,21 @@
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
+    "db:dump": "bash scripts/dump-database.sh",
+    "db:restore": "bash scripts/restore-database.sh",
     "db:up": "docker compose up -d postgres",
     "import:items": "tsx scripts/import-items-from-api.ts",
-    "sync:quantities": "tsx scripts/sync-quantities-from-api.ts"
+    "sync:quantities": "tsx scripts/sync-quantities-from-api.ts",
+    "reftab:categories": "tsx scripts/list-reftab-categories.ts",
+    "reftab:test": "tsx scripts/test-reftab-connection.ts",
+    "reftab:import-lente": "tsx scripts/import-reftab-category.ts lente",
+    "reftab:import-audio": "tsx scripts/import-reftab-audio.ts",
+    "reftab:import-camera": "tsx scripts/import-reftab-camera.ts",
+    "reftab:import-luz": "tsx scripts/import-reftab-luz.ts",
+    "reftab:import-video": "tsx scripts/import-reftab-video.ts",
+    "reftab:import-accessories": "tsx scripts/import-reftab-accessories.ts",
+    "reftab:fix-accessories-serial": "tsx scripts/fix-reftab-accessories-serial.ts",
+    "reftab:backfill-images": "tsx scripts/reftab-backfill-images.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
